@@ -20,6 +20,8 @@ class Game(arcade.Window):
 
     self.all_sprite_list=None
 
+    self.game_over=False
+    self.score=0
   
   def setup(self):
     self.player = player(self.screen_width/2,self.screen_height/2)
@@ -36,16 +38,30 @@ class Game(arcade.Window):
     pass
 
   def update(self, delta_time):
-    self.all_sprite_list.update()
-    self.beer_list.update()
-    self.player.update(self.screen_width, self.screen_height)
+
+    if not(self.game_over):
+      self.all_sprite_list.update()
+      self.beer_list.update()
+      self.player.update(self.screen_width, self.screen_height)  
+
+      securitas_hit_list = arcade.check_for_collision_with_list(self.player,self.securitas_list)
+      beer_hit_list = arcade.check_for_collision_with_list(self.player,self.beer_list)
+
+      for beer in beer_hit_list:
+        beer.kill()
+        self.score+=1
+      if len(securitas_hit_list)>0 :
+        self.game_over=True
+    else : 
+      arcade.quick_run(0.25)
 
   def on_draw(self): 
     arcade.start_render()
     self.beer_list.draw()
     self.all_sprite_list.draw()
     self.player.draw()
-    
+    output_score=f"Score: {self.score} "
+    arcade.draw_text(output_score,10,20,arcade.color.RED,14)
 
   def on_key_press(self, key, modifiers):
     if key == arcade.key.UP:
