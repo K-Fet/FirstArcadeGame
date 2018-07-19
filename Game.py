@@ -1,6 +1,8 @@
 import arcade 
 from data import *
 from player import *
+from beer import *
+from securitas import *
 
 class Game(arcade.Window):
 
@@ -40,6 +42,8 @@ class Game(arcade.Window):
 
   def on_draw(self): 
     arcade.start_render()
+    self.beer_list.draw()
+    self.all_sprite_list.draw()
     self.player.draw()
     
 
