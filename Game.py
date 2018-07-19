@@ -5,7 +5,7 @@ class Game(arcade.Window):
 
   def __init__(self,screen_width=SCREEN_WIDTH,screen_height=SCREEN_HEIGHT):
     super().__init__(screen_width, screen_height)
-    arcade.set_background_color(arcade.color.BLACK)
+    arcade.set_background_color(arcade.color.AMAZON)
   
   
   def setup(self):
