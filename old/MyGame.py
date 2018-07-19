@@ -9,8 +9,8 @@ from bier import *
 class MyGame(arcade.Window):
 	def _init__(self):
 		super().__init__(SCREEN_WIDTH,SCREEN_HEIGHT,"K-Fêt world")
-		file_path=os.path.dirname(os.path.abspath(__file__))
-		os.chdir(file_path)
+		# file_path=os.path.dirname(os.path.abspath(__file__))
+		# os.chdir(file_path)
 
 		self.player_list=None
 		self.bier_list=None
