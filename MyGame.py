@@ -3,7 +3,8 @@ import arcade
 import os
 from securitas import *
 from player import *
- 
+
+""" Scale of each object """ 
 SPRITE_SCALING_WALL= 0.1
 SPRITE_SCALING_SECU= 0.05 
 SPRITE_SCALING_PLAYER= 0.15
@@ -11,6 +12,9 @@ SPRITE_SCALING_BIER=0.1
 
 BIER_COUNT=50
 SECU_COUNT=8
+
+#must be a double
+TOTAL_TIME=10.0
 
 SCREEN_WIDTH=800
 SCREEN_HEIGHT=600
@@ -22,8 +26,8 @@ TOP_LIMIT = SCREEN_HEIGHT + OFFSCREEN_SPACE
 
 MOVEMENT_SPEED=3
 
-class MyGame(arcade.Window):
 
+class MyGame(arcade.Window):
 	def _init__(self):
 		super().__init__(SCREEN_WIDTH,SCREEN_HEIGHT,"K-Fêt world")
 		file_path=os.path.dirname(os.path.abspath(__file__))
@@ -38,6 +42,7 @@ class MyGame(arcade.Window):
 		self.player_sprite=None
 		self.score=0
 		self.game_over=False
+		self.total_time=TOTAL_TIME
 
 		self.set_mouse_visible(False)
 
@@ -50,8 +55,10 @@ class MyGame(arcade.Window):
 		self.wall_list=arcade.SpriteList()
 		self.all_sprites_list=arcade.SpriteList()
 
+		self.total_time=TOTAL_TIME	
 		self.score=0
 		self.game_over=False
+		
 		self.player_sprite=player(SPRITE_SCALING_PLAYER)
 		self.player_sprite.center_x=50
 		self.player_sprite.center_y=50
@@ -65,7 +72,6 @@ class MyGame(arcade.Window):
 			bier.center_y=random.randrange(SCREEN_HEIGHT)
 
 			self.bier_list.append(bier)
-			self.all_sprites_list.append(bier)
 
 		for j in range(SECU_COUNT):
 			secu=securitas(SPRITE_SCALING_SECU)
@@ -96,14 +102,20 @@ class MyGame(arcade.Window):
 			self.all_sprites_list.append(wall)
 			self.wall_list.append(wall)
 		self.physics_engine=arcade.PhysicsEngineSimple(self.player_sprite,self.wall_list)
-
+	""" Don't put static object in all_sprites because there will update with dynamics objects """
 	def on_draw(self):
 		arcade.start_render()
 		self.all_sprites_list.draw()
 		self.wall_list.draw()
+		self.bier_list.draw()
 
-		output=f"Score: {self.score}"
-		arcade.draw_text(output,10,20,arcade.color.RED,14)
+		minutes=int(self.total_time)//60
+		seconds=int(self.total_time)%60
+
+		output_score=f"Score: {self.score} "
+		output_time=f"Time: {minutes:02d}:{seconds:02d}"
+		arcade.draw_text(output_score,10,20,arcade.color.RED,14)
+		arcade.draw_text(output_time,700,20,arcade.color.RED,14)
 
 	def on_key_press(self, key, modifiers):
 
@@ -135,9 +147,14 @@ class MyGame(arcade.Window):
 ###############################################################
 
 	def update(self,delta_time):
+		if int(self.total_time)==0:
+			self.game_over=True
 		if not(self.game_over):
+			self.total_time-=delta_time
+			
 			self.all_sprites_list.update()
 			self.physics_engine.update()
+			
 			bier_hit_list = arcade.check_for_collision_with_list(self.player_sprite,self.bier_list)
 			secu_hit_list = arcade.check_for_collision_with_list(self.player_sprite,self.secu_list)
 
