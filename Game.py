@@ -7,7 +7,7 @@ from securitas import *
 class Game(arcade.Window):
 
   def __init__(self,screen_width=SCREEN_WIDTH,screen_height=SCREEN_HEIGHT):
-    super().__init__(screen_width, screen_height, fullscreen=True)
+    super().__init__(screen_width, screen_height, fullscreen=False)
     arcade.set_background_color(arcade.color.AMAZON)
     self.player = None
     self.screen_width,self.screen_height = self.get_size()
@@ -28,11 +28,14 @@ class Game(arcade.Window):
     self.all_sprite_list=arcade.SpriteList()
 
     self.beer_list=arcade.SpriteList()
-    self.beer=beer(50,50)
+    self.beer=beer()
     self.beer_list.append(self.beer)
 
     self.securitas_list=arcade.SpriteList()
-    self.securitas=securitas(100,100)
+    self.securitas=securitas(1070,50)
+    self.securitas_list.append(self.securitas)
+    self.all_sprite_list.append(self.securitas)
+    self.securitas=securitas(220,610)
     self.securitas_list.append(self.securitas)
     self.all_sprite_list.append(self.securitas)
     pass
