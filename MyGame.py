@@ -3,29 +3,8 @@ import arcade
 import os
 from securitas import *
 from player import *
-
-""" Scale of each object """ 
-SPRITE_SCALING_WALL= 0.1
-SPRITE_SCALING_SECU= 0.05 
-SPRITE_SCALING_PLAYER= 0.15
-SPRITE_SCALING_BIER=0.1
-
-BIER_COUNT=50
-SECU_COUNT=8
-
-#must be a double
-TOTAL_TIME=10.0
-
-SCREEN_WIDTH=800
-SCREEN_HEIGHT=600
-OFFSCREEN_SPACE=0
-LEFT_LIMIT = -OFFSCREEN_SPACE
-RIGHT_LIMIT = SCREEN_WIDTH + OFFSCREEN_SPACE
-BOTTOM_LIMIT = -OFFSCREEN_SPACE
-TOP_LIMIT = SCREEN_HEIGHT + OFFSCREEN_SPACE
-
-MOVEMENT_SPEED=3
-
+from data import *
+from bier import *
 
 class MyGame(arcade.Window):
 	def _init__(self):
@@ -59,47 +38,32 @@ class MyGame(arcade.Window):
 		self.score=0
 		self.game_over=False
 		
-		self.player_sprite=player(SPRITE_SCALING_PLAYER)
-		self.player_sprite.center_x=50
-		self.player_sprite.center_y=50
+		self.player_sprite=player()
 		self.player_list.append(self.player_sprite)
 		self.all_sprites_list.append(self.player_sprite)
 
 		for i in range(BIER_COUNT):
-			bier=arcade.Sprite("Image/bier.png",SPRITE_SCALING_BIER)
+			self.bier=bier()
 
-			bier.center_x=random.randrange(SCREEN_WIDTH)
-			bier.center_y=random.randrange(SCREEN_HEIGHT)
-
-			self.bier_list.append(bier)
+			self.bier_list.append(self.bier)
 
 		for j in range(SECU_COUNT):
-			secu=securitas(SPRITE_SCALING_SECU)
+			self.secu=securitas()
 
-			secu.center_x=random.randrange(SCREEN_WIDTH)
-			secu.center_y=random.randrange(SCREEN_HEIGHT)
+			self.secu_list.append(self.secu)
+			self.all_sprites_list.append(self.secu)
 
-			secu.change_x=random.random()*2-1
-			secu.change_y=random.random()*2-1
-
-			#secu.change_angle=(random.random()-0.5)*2
-
-			self.secu_list.append(secu)
-			self.all_sprites_list.append(secu)
-
-		for x in range(173, 650, 64):
+		for x in range(173, 650, 32):
 			wall = arcade.Sprite("Image/wall.png", SPRITE_SCALING_WALL)
 			wall.center_x = x
 			wall.center_y = 200
-			self.all_sprites_list.append(wall)
 			self.wall_list.append(wall)
 
         # Create a column of boxes
-		for y in range(273, 500, 64):
+		for y in range(273, 500, 32):
 			wall = arcade.Sprite("Image/wall.png", SPRITE_SCALING_WALL)
 			wall.center_x = 465
 			wall.center_y = y
-			self.all_sprites_list.append(wall)
 			self.wall_list.append(wall)
 		self.physics_engine=arcade.PhysicsEngineSimple(self.player_sprite,self.wall_list)
 	""" Don't put static object in all_sprites because there will update with dynamics objects """
