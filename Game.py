@@ -13,7 +13,6 @@ class Game(arcade.Window):
     self.player = None
     self.screen_width,self.screen_height = self.get_size()
   
-    self.beer_sprite=None
     self.beer_list=None
 
     self.securitas_sprite=None
@@ -31,8 +30,9 @@ class Game(arcade.Window):
     self.all_sprite_list=arcade.SpriteList()
 
     self.beer_list=arcade.SpriteList()
-    self.beer=beer()
-    self.beer_list.append(self.beer)
+
+    beer_sprite=beer()
+    self.beer_list.append(beer_sprite)
 
     self.securitas_list=arcade.SpriteList()
     self.securitas=securitas(1070,110)
@@ -80,12 +80,18 @@ class Game(arcade.Window):
        
       self.total_time+=delta_time
 
+      
       securitas_hit_list = arcade.check_for_collision_with_list(self.player,self.securitas_list)
       beer_hit_list = arcade.check_for_collision_with_list(self.player,self.beer_list)
-
-      for beer in beer_hit_list:
-        beer.kill()
+      for x in range(len(beer_hit_list)):
+        beer_sprite=beer()
+        self.beer_list.append(beer_sprite)
+      for beer_sprite_hit in beer_hit_list:
+        beer_sprite_hit.kill()
         self.score+=1
+        if self.score%3==0:
+          beer_sprite=beer()
+          self.beer_list.append(beer_sprite)
       if len(securitas_hit_list)>0 :
         self.game_over=True   
 
