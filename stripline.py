@@ -7,8 +7,6 @@ class stripline():
 		self.points = points
 		# self.center_x = (points[0][0] + points[1][0]) / 2
 		# self.center_y = (points[0][1] + points[1][1]) / 2  
-		self.line_points = self.get_points()
-		
 
 	def draw(self):
 		arcade.draw_line_strip(self.points, arcade.color.BLACK)
