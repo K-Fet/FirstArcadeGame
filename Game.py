@@ -46,6 +46,22 @@ class Game(arcade.Window):
     self.total_time=0
     pass
 
+  def on_draw(self): 
+    arcade.start_render()
+    self.stripline.draw()
+    self.beer_list.draw()
+    self.all_sprite_list.draw()
+    self.player.draw()
+
+    minutes=int(self.total_time)//60
+    seconds=int(self.total_time)%60
+  
+    output_score=f"Score: {self.score} "
+    output_time=f"Time: {minutes:02d}:{seconds:02d}"
+    arcade.draw_text(output_score,10,20,arcade.color.RED,14)
+    arcade.draw_text(output_time,10,50,arcade.color.RED,14)
+
+
   def update(self, delta_time):
 
     if not(self.game_over):
@@ -66,24 +82,6 @@ class Game(arcade.Window):
     else : 
       arcade.quick_run(0.25)
 
-  def on_draw(self): 
-    arcade.start_render()
-    self.stripline.draw()
-    self.player.draw()
-
-  def update(self, delta_time):
-    self.player.update(self.screen_width, self.screen_height)
-    self.beer_list.draw()
-    self.all_sprite_list.draw()
-    self.player.draw()
-
-    minutes=int(self.total_time)//60
-    seconds=int(self.total_time)%60
-  
-    output_score=f"Score: {self.score} "
-    output_time=f"Time: {minutes:02d}:{seconds:02d}"
-    arcade.draw_text(output_score,10,20,arcade.color.RED,14)
-    arcade.draw_text(output_time,10,50,arcade.color.RED,14)
 
 
   def on_key_press(self, key, modifiers):
