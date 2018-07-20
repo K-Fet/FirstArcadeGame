@@ -21,7 +21,7 @@ class Game(arcade.Window):
     self.all_sprite_list=None
 
     self.game_over=False
-    self.score=0
+
   
   def setup(self):
     self.player = player(self.screen_width/2,self.screen_height/2)
@@ -32,12 +32,15 @@ class Game(arcade.Window):
     self.beer_list.append(self.beer)
 
     self.securitas_list=arcade.SpriteList()
-    self.securitas=securitas(1070,50)
+    self.securitas=securitas(1070,110)
     self.securitas_list.append(self.securitas)
     self.all_sprite_list.append(self.securitas)
-    self.securitas=securitas(220,610)
+    self.securitas=securitas(220,675)
     self.securitas_list.append(self.securitas)
     self.all_sprite_list.append(self.securitas)
+    
+    self.score=0
+    self.total_time=0
     pass
 
   def update(self, delta_time):
@@ -46,6 +49,8 @@ class Game(arcade.Window):
       self.all_sprite_list.update()
       self.beer_list.update()
       self.player.update(self.screen_width, self.screen_height)  
+
+      self.total_time+=delta_time
 
       securitas_hit_list = arcade.check_for_collision_with_list(self.player,self.securitas_list)
       beer_hit_list = arcade.check_for_collision_with_list(self.player,self.beer_list)
@@ -63,8 +68,14 @@ class Game(arcade.Window):
     self.beer_list.draw()
     self.all_sprite_list.draw()
     self.player.draw()
+
+    minutes=int(self.total_time)//60
+    seconds=int(self.total_time)%60
+  
     output_score=f"Score: {self.score} "
+    output_time=f"Time: {minutes:02d}:{seconds:02d}"
     arcade.draw_text(output_score,10,20,arcade.color.RED,14)
+    arcade.draw_text(output_time,10,50,arcade.color.RED,14)
 
   def on_key_press(self, key, modifiers):
     if key == arcade.key.UP:

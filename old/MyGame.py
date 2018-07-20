@@ -21,7 +21,7 @@ class MyGame(arcade.Window):
 		self.player_sprite=None
 		self.score=0
 		self.game_over=False
-		self.total_time=TOTAL_TIME
+		
 
 		self.set_mouse_visible(False)
 
@@ -36,6 +36,7 @@ class MyGame(arcade.Window):
 
 		self.total_time=TOTAL_TIME	
 		self.score=0
+		self.total_time=0.0
 		self.game_over=False
 		
 		self.player_sprite=player()
