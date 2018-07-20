@@ -68,8 +68,9 @@ class Game(arcade.Window):
     if not(self.game_over):
       self.all_sprite_list.update()
       self.beer_list.update()
-      self.player.update(self.screen_width, self.screen_height)  
-
+      self.disabledKeys = self.stripline.check_for_collisions_with_player(self.player.center_x, self.player.center_y) 
+      self.player.update(self.screen_width, self.screen_height, self.disabledKeys)
+       
       self.total_time+=delta_time
 
       securitas_hit_list = arcade.check_for_collision_with_list(self.player,self.securitas_list)
@@ -85,6 +86,7 @@ class Game(arcade.Window):
 
 
   def on_key_press(self, key, modifiers):
+    print(self.disabledKeys )
     if key == arcade.key.UP:
       self.player.change_y = MOVEMENT_SPEED
     if key == arcade.key.DOWN:
