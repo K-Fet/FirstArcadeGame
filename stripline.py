@@ -18,6 +18,30 @@ class stripline():
 			y=int(y1+dir_coeff*(x-x1))
 			coord=(x,y)
 			self.points_list.append(coord)
+	
+	def check_for_collisions_with_player(self, player_x, player_y):
+		disabledKeys = [False, False, False, False]
+		for point in self.points_list:
+			x = point[0]
+			y = point[1]
+			dist_x = x - player_x
+			dist_y = y - player_y
+			if abs(dist_x) < 20 and abs(dist_y) < 20:
+				if (dist_x > 0): 
+					disabledKeys[1] = True 
+					if disabledKeys[0] : disabledKeys[0] = False
+				if (dist_x < 0): 
+					disabledKeys [0] = True
+					if disabledKeys[1] : disabledKeys[1] = False
+				if (dist_y > 0): 
+					disabledKeys[2] = True
+					if disabledKeys[3] : disabledKeys[3] = False
+				if (dist_y < 0): 
+					disabledKeys[3] = True
+					if disabledKeys[2] : disabledKeys[2] = False
+		return disabledKeys
+
+
 		
 
 	def draw(self):
