@@ -73,14 +73,14 @@ class Game(arcade.Window):
 
   def update(self, delta_time):
     if not(self.game_over):
-      self.all_sprite_list.update()
       self.beer_list.update()
       self.disabledKeys = self.stripline.check_for_collisions_with_player(self.player.center_x, self.player.center_y) 
       self.player.update(self.screen_width, self.screen_height, self.disabledKeys)
+      for securitas_sprite in self.securitas_list:
+        securitas_sprite.update(self.screen_width, self.screen_height)
        
       self.total_time+=delta_time
 
-      
       securitas_hit_list = arcade.check_for_collision_with_list(self.player,self.securitas_list)
       beer_hit_list = arcade.check_for_collision_with_list(self.player,self.beer_list)
       for x in range(len(beer_hit_list)):
