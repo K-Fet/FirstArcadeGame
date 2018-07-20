@@ -101,7 +101,6 @@ class Game(arcade.Window):
       self.player.change_x = 0
     
 def main():
-
     game = Game()
     game.setup()
     arcade.run()
