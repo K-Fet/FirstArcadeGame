@@ -1,4 +1,5 @@
 import arcade 
+import os
 from data import *
 from player import *
 from stripline import *
@@ -31,12 +32,13 @@ class Game(arcade.Window):
 
   def __init__(self,screen_width=SCREEN_WIDTH,screen_height=SCREEN_HEIGHT):
     super().__init__(screen_width, screen_height, fullscreen=FULLSCREEN)
-    arcade.set_background_color(arcade.color.AMAZON)
-
-# To be responsive
+    
+    self.player = None
+    
+    # To be responsive
     self.screen_width,self.screen_height = self.get_size()
 
-# Sprites
+    # Sprites
     self.username="Bd"
     self.player = None
     self.player_BAC= None
@@ -48,12 +50,12 @@ class Game(arcade.Window):
 
     self.all_sprite_list = None
 
-# Windows 
+    # Windows 
     self.game_over = False
     self.menu = True
     self.highscore = False
 
-# Statics graphics elements organisation 
+    # Statics graphics elements organisation 
     self.line_break=screen_height/5
 
     self.play_position_x=self.screen_width / 2
@@ -94,12 +96,21 @@ class Game(arcade.Window):
     self.highscore_position_y=self.screen_height - self.line_break/4
     self.highscore_height=54
     self.highscore_width=int(10*0.4*self.highscore_height)
+    
+    # Background image will be stored in this variable
+    self.background = None
+
+    # Set the working directory (where we expect to find files) to the same
+    # directory this .py file is in.
+    file_path = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(file_path)
   
   def setup(self):
     linepoints = ((0,0),(self.screen_width/2, self.screen_height/2))
     self.stripline = stripline(linepoints)
     self.player = player(self.screen_width/2,self.screen_height/2)
     self.all_sprite_list=arcade.SpriteList()
+    self.background = arcade.load_texture("img/map1_1280.png")
 
     self.beer_list=arcade.SpriteList()
 
@@ -165,6 +176,10 @@ class Game(arcade.Window):
       arcade.draw_text(output,self.backmenu_position_x, self.backmenu_position_y, arcade.color.WHITE, self.backmenu_height,align="center",anchor_x="center",anchor_y="center")
 
     else:
+      # Background
+      arcade.draw_texture_rectangle(self.screen_width // 2, self.screen_height // 2,
+                                      self.screen_width, self.screen_height, self.background)
+
       self.stripline.draw()
       self.beer_list.draw()
       self.all_sprite_list.draw()
