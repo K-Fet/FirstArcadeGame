@@ -49,22 +49,29 @@ class Game(arcade.Window):
 
   def on_draw(self): 
     arcade.start_render()
-    self.stripline.draw()
-    self.beer_list.draw()
-    self.all_sprite_list.draw()
-    self.player.draw()
+    if(self.game_over):
+      
+      score=self.score*self.total_time
+      output = f"Game Over - Score : {int(score)}"
+      arcade.draw_text(output, 240, 400, arcade.color.WHITE, 54)
 
-    minutes=int(self.total_time)//60
-    seconds=int(self.total_time)%60
+      output = "Click to restart"
+      arcade.draw_text(output, 310, 300, arcade.color.WHITE, 24)
+    else:
+      self.stripline.draw()
+      self.beer_list.draw()
+      self.all_sprite_list.draw()
+      self.player.draw()
+
+      minutes=int(self.total_time)//60
+      seconds=int(self.total_time)%60
   
-    output_score=f"Score: {self.score} "
-    output_time=f"Time: {minutes:02d}:{seconds:02d}"
-    arcade.draw_text(output_score,10,20,arcade.color.RED,14)
-    arcade.draw_text(output_time,10,50,arcade.color.RED,14)
-
+      output_score=f"Score: {self.score}"
+      output_time=f"Time: {minutes:02d}:{seconds:02d}"
+      arcade.draw_text(output_score,10,20,arcade.color.RED,14)
+      arcade.draw_text(output_time,10,50,arcade.color.RED,14)
 
   def update(self, delta_time):
-
     if not(self.game_over):
       self.all_sprite_list.update()
       self.beer_list.update()
@@ -79,9 +86,7 @@ class Game(arcade.Window):
         beer.kill()
         self.score+=1
       if len(securitas_hit_list)>0 :
-        self.game_over=True
-    else : 
-      arcade.quick_run(0.25)
+        self.game_over=True   
 
 
   def on_key_press(self, key, modifiers):
@@ -99,7 +104,12 @@ class Game(arcade.Window):
       self.player.change_y = 0
     if key == arcade.key.LEFT or key == arcade.key.RIGHT:
       self.player.change_x = 0
-    
+      
+  def on_mouse_press(self,x,y,button,modifiers):
+    if self.game_over :
+      self.setup()
+      self.game_over=False
+
 def main():
     game = Game()
     game.setup()
