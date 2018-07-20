@@ -3,7 +3,6 @@ from data import *
 
 class stripline():
 	def __init__(self, points):
-		print("stripline init")
 		self.points = points
 		self.points_list=list()
 		
