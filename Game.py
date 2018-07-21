@@ -4,12 +4,36 @@ from player import *
 from stripline import *
 from beer import *
 from securitas import *
+import os
+import pickle
+import re
+import operator
+
+
+def take_scores():
+    scores={}   
+    if os.path.exists(HIGHSCORE_FILE) and os.path.getsize(HIGHSCORE_FILE) > 0: # File exists
+        highscore = open(HIGHSCORE_FILE, "rb")
+        mon_depickler = pickle.Unpickler(highscore)
+        scores = mon_depickler.load()
+        highscore.close()
+    else: # File does not exist
+        scores = {}
+    return scores
+
+def save_score(scores):
+  highscore = open(HIGHSCORE_FILE, "wb") # On écrase les anciens scores
+  mon_pickler = pickle.Pickler(highscore)
+  mon_pickler.dump(scores)
+  highscore.close()
 
 class Game(arcade.Window):
 
   def __init__(self,screen_width=SCREEN_WIDTH,screen_height=SCREEN_HEIGHT):
     super().__init__(screen_width, screen_height, fullscreen=FULLSCREEN)
     arcade.set_background_color(arcade.color.AMAZON)
+
+    self.username="Lucas"
     self.player = None
     self.screen_width,self.screen_height = self.get_size()
   
@@ -21,6 +45,8 @@ class Game(arcade.Window):
     self.all_sprite_list=None
 
     self.game_over=False
+    self.menu=True
+    self.highscore=False
 
   
   def setup(self):
@@ -44,19 +70,45 @@ class Game(arcade.Window):
     
     self.score=0
     self.total_time=0
-    pass
+    
 
 
   def on_draw(self): 
     arcade.start_render()
-    if(self.game_over):
-      
+    if self.game_over :
+       
       score=self.score*self.total_time
-      output = f"Game Over - Score : {int(score)}"
-      arcade.draw_text(output, 240, 400, arcade.color.WHITE, 54)
+
+      output = f"Game Over - Score : {int(self.score)}"
+      arcade.draw_text(output, GAME_OVER_POSITION_X, GAME_OVER_POSITION_Y, arcade.color.WHITE, GAME_OVER_HEIGHT, align="center",anchor_x="center",anchor_y="center")
 
       output = "Click to restart"
-      arcade.draw_text(output, 310, 300, arcade.color.WHITE, 24)
+      arcade.draw_text(output, RESTART_POSITION_X, RESTART_POSITION_Y, arcade.color.WHITE, RESTART_HEIGHT, align="center",anchor_x="center",anchor_y="center")
+    
+    elif (self.menu):
+      output = "Play"
+      arcade.draw_text(output, PLAY_POSITION_X, PLAY_POSITION_Y, arcade.color.WHITE, PLAY_HEIGHT,align="center",anchor_x="center",anchor_y="center")
+
+      output = "High Score"
+      arcade.draw_text(output, MENU_HIGHSCORE_POSITION_X, MENU_HIGHSCORE_POSITION_Y, arcade.color.WHITE, MENU_HIGHSCORE_HEIGHT,align="center",anchor_x="center",anchor_y="center")
+
+      output = "Quit"
+      arcade.draw_text(output, QUIT_POSITION_X, QUIT_POSITION_Y, arcade.color.WHITE, QUIT_HEIGHT,align="center",anchor_x="center",anchor_y="center")
+
+    elif (self.highscore):
+      output = "High Score"
+      arcade.draw_text(output, HIGHSCORE_POSITION_X, HIGHSCORE_POSITION_Y,arcade.color.WHITE, HIGHSCORE_HEIGHT,align="center",anchor_x="center",anchor_y="center")
+      highscore=take_scores()
+      rank=1
+      
+      sorted_highscore=sorted(highscore.items(),key=operator.itemgetter(1),reverse=True)
+
+      for pair in sorted_highscore :
+        keys=re.sub('@','',pair[0])
+        output=str(rank)+ " : " + keys + "  "+ str(pair[1])# + keys 
+        arcade.draw_text(output, HIGHSCORE_POSITION_X, HIGHSCORE_POSITION_Y - HIGHSCORE_HEIGHT*rank - LINE_BREAK*rank/6,arcade.color.WHITE,align="center",anchor_x="center",anchor_y="center")
+        rank+=1
+
     else:
       self.stripline.draw()
       self.beer_list.draw()
@@ -66,13 +118,13 @@ class Game(arcade.Window):
       minutes=int(self.total_time)//60
       seconds=int(self.total_time)%60
   
-      output_score=f"Score: {self.score}"
+      output_score=f"Score: {int(self.score)}"
       output_time=f"Time: {minutes:02d}:{seconds:02d}"
       arcade.draw_text(output_score,10,20,arcade.color.RED,14)
       arcade.draw_text(output_time,10,50,arcade.color.RED,14)
 
   def update(self, delta_time):
-    if not(self.game_over):
+    if (self.game_over == False and self.menu==False and self.highscore==False):
       self.beer_list.update()
       self.disabledKeys = self.stripline.check_for_collisions_with_player(self.player.center_x, self.player.center_y) 
     
@@ -92,11 +144,30 @@ class Game(arcade.Window):
       for beer_sprite_hit in beer_hit_list:
         beer_sprite_hit.kill()
         self.score+=1
-        if self.score%3==0:
+        if self.score%3==0 and self.score<BEER_CONVERGENCE:
           beer_sprite=beer()
           self.beer_list.append(beer_sprite)
       if len(securitas_hit_list)>0 :
+        
         self.game_over=True   
+        self.score=self.score*self.total_time
+        print(self.score)
+
+        highscore=take_scores()
+
+        if len(highscore)<10:
+          while self.username in highscore:
+            self.username+="@"
+          highscore[self.username]=int(self.score)
+          save_score(highscore)
+          isNewHighscore=True
+        else:
+          if self.score>highscore[min(highscore,key=highscore.get)]:
+            del highscore[min(highscore,key=highscore.get)]
+          while self.username in highscore:
+            self.username+="@"
+          highscore[self.username]=int(self.score)
+          save_score(highscore)
 
 
   def on_key_press(self, key, modifiers):
@@ -119,6 +190,16 @@ class Game(arcade.Window):
     if self.game_over :
       self.setup()
       self.game_over=False
+    elif self.menu:
+      if x < PLAY_POSITION_X + PLAY_WIDTH and x > PLAY_POSITION_X - PLAY_WIDTH and y < PLAY_POSITION_Y + PLAY_HEIGHT and y > PLAY_POSITION_Y - PLAY_HEIGHT :
+        self.setup()
+        self.menu=False
+      elif  x < MENU_HIGHSCORE_POSITION_X + MENU_HIGHSCORE_WIDTH and x > MENU_HIGHSCORE_POSITION_X - MENU_HIGHSCORE_WIDTH and y < MENU_HIGHSCORE_POSITION_Y + MENU_HIGHSCORE_HEIGHT and y > MENU_HIGHSCORE_POSITION_Y - MENU_HIGHSCORE_HEIGHT :
+        self.menu=False
+        self.highscore=True
+      elif  x < QUIT_POSITION_X + QUIT_WIDTH and x > QUIT_POSITION_X - QUIT_WIDTH and y < QUIT_POSITION_Y + QUIT_HEIGHT and y > QUIT_POSITION_Y - QUIT_HEIGHT :
+        arcade.quick_run(0.5)
+       
 
 def main():
     game = Game()
