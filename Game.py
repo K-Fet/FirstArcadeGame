@@ -33,21 +33,27 @@ class Game(arcade.Window):
     super().__init__(screen_width, screen_height, fullscreen=FULLSCREEN)
     arcade.set_background_color(arcade.color.AMAZON)
 
-    self.username="Lucas"
-    self.player = None
+# To be responsive
     self.screen_width,self.screen_height = self.get_size()
-  
-    self.beer_list=None
 
-    self.securitas_sprite=None
-    self.securitas_list=None
+# Sprites
+    self.username="Bd"
+    self.player = None
+    self.player_BAC= None
+    
+    self.beer_list= None
 
-    self.all_sprite_list=None
+    self.securitas_sprite = None
+    self.securitas_list = None
 
-    self.game_over=False
-    self.menu=True
-    self.highscore=False
+    self.all_sprite_list = None
 
+# Windows 
+    self.game_over = False
+    self.menu = True
+    self.highscore = False
+
+# Statics graphics elements organisation 
     self.line_break=screen_height/5
 
     self.play_position_x=self.screen_width / 2
@@ -109,6 +115,7 @@ class Game(arcade.Window):
     self.all_sprite_list.append(self.securitas)
     
     self.score=0
+    self.player_BAC=0
     self.total_time=0
     
   def on_draw(self): 
@@ -191,12 +198,11 @@ class Game(arcade.Window):
         self.beer_list.append(beer_sprite)
       for beer_sprite_hit in beer_hit_list:
         beer_sprite_hit.kill()
-        self.score+=1
-        if self.score%3==0 and self.score<BEER_CONVERGENCE:
+        self.player_BAC+=1
+        if self.player_BAC>5 and self.score<BEER_CONVERGENCE:
           beer_sprite=beer()
           self.beer_list.append(beer_sprite)
       if len(securitas_hit_list)>0 :
-        
         self.game_over=True   
         self.score=self.score*self.total_time
 
@@ -218,20 +224,26 @@ class Game(arcade.Window):
 
 
   def on_key_press(self, key, modifiers):
-    if key == arcade.key.UP:
-      self.player.change_y = MOVEMENT_SPEED
-    if key == arcade.key.DOWN:
-      self.player.change_y = -MOVEMENT_SPEED
-    if key == arcade.key.LEFT:
-      self.player.change_x = -MOVEMENT_SPEED
-    if key == arcade.key.RIGHT:
-      self.player.change_x = MOVEMENT_SPEED
+    if(self.game_over==False, self.menu==False, self.highscore==False):
+      if key == arcade.key.UP:
+        self.player.change_y = MOVEMENT_SPEED
+      if key == arcade.key.DOWN:
+        self.player.change_y = -MOVEMENT_SPEED
+      if key == arcade.key.LEFT:
+        self.player.change_x = -MOVEMENT_SPEED
+      if key == arcade.key.RIGHT:
+        self.player.change_x = MOVEMENT_SPEED
+
+
 
   def on_key_release(self, key, modifiers):
     if key == arcade.key.UP or key == arcade.key.DOWN:
       self.player.change_y = 0
     if key == arcade.key.LEFT or key == arcade.key.RIGHT:
       self.player.change_x = 0
+    if key == arcade.key.TAB:
+        self.score+=self.player_BAC
+        self.player_BAC=0
       
   def on_mouse_press(self,x,y,button,modifiers):
     if self.game_over :
@@ -257,7 +269,7 @@ class Game(arcade.Window):
       if x < self.backmenu_position_x + self.backmenu_width and x > self.backmenu_position_x - self.backmenu_width and y < self.backmenu_position_y + self.backmenu_height and y > self.backmenu_position_y - self.backmenu_height :
         self.highscore=False
         self.menu=True
-       
+    
 
 def main():
     game = Game()
