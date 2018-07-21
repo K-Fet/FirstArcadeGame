@@ -88,8 +88,6 @@ class Game(arcade.Window):
     self.highscore_position_y=self.screen_height - self.line_break/4
     self.highscore_height=54
     self.highscore_width=int(10*0.4*self.highscore_height)
-
-
   
   def setup(self):
     linepoints = ((0,0),(self.screen_width/2, self.screen_height/2))
@@ -113,8 +111,6 @@ class Game(arcade.Window):
     self.score=0
     self.total_time=0
     
-
-
   def on_draw(self): 
     arcade.start_render()
 
@@ -205,7 +201,7 @@ class Game(arcade.Window):
         self.score=self.score*self.total_time
 
         highscore=take_scores()
-
+        print(len(highscore))
         if len(highscore)<10:
           while self.username in highscore:
             self.username+="@"
@@ -215,10 +211,10 @@ class Game(arcade.Window):
         else:
           if self.score>highscore[min(highscore,key=highscore.get)]:
             del highscore[min(highscore,key=highscore.get)]
-          while self.username in highscore:
-            self.username+="@"
-          highscore[self.username]=int(self.score)
-          save_score(highscore)
+            while self.username in highscore:
+              self.username+="@"
+            highscore[self.username]=int(self.score)
+            save_score(highscore)
 
 
   def on_key_press(self, key, modifiers):
