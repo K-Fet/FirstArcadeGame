@@ -48,7 +48,8 @@ class Game(arcade.Window):
     self.securitas_sprite = None
     self.securitas_list = None
 
-    self.all_sprite_list = None
+    self.stripeline_list = None
+    self.all_sprite_list=None
 
     # Windows 
     self.game_over = False
@@ -106,8 +107,20 @@ class Game(arcade.Window):
     os.chdir(file_path)
   
   def setup(self):
-    linepoints = ((0,0),(self.screen_width/2, self.screen_height/2))
-    self.stripline = stripline(linepoints)
+    self.stripeline_list = []
+
+    i = 0
+    couple_n = None
+    couple_nMinus1 = None
+    for couple in MAP1_POINT_LIST: # ((0,0),(self.screen_width / 2,self.screen_height / 2),(self.screen_width,0))
+      if i > 0:
+        couple_n = list(couple)
+        linepoints = ((couple_nMinus1[0],couple_nMinus1[1]),(couple_n[0],couple_n[1]))
+        curStripline = stripline(linepoints)
+        self.stripeline_list.append(curStripline)
+      couple_nMinus1 = list(couple)
+      i+=1
+
     self.player = player(self.screen_width/2,self.screen_height/2)
     self.all_sprite_list=arcade.SpriteList()
     self.background = arcade.load_texture("img/map1_1280.png")
@@ -180,7 +193,8 @@ class Game(arcade.Window):
       arcade.draw_texture_rectangle(self.screen_width // 2, self.screen_height // 2,
                                       self.screen_width, self.screen_height, self.background)
 
-      self.stripline.draw()
+      for curStripeline in self.stripeline_list:
+        curStripeline.draw()
       self.beer_list.draw()
       self.all_sprite_list.draw()
       self.player.draw()
@@ -196,13 +210,16 @@ class Game(arcade.Window):
   def update(self, delta_time):
     if (self.game_over == False and self.menu==False and self.highscore==False):
       self.beer_list.update()
-      self.disabledKeys = self.stripline.check_for_collisions_with_player(self.player.center_x, self.player.center_y) 
-    
+      for curStripeline in self.stripeline_list:
+        self.disabledKeys = curStripeline.check_for_collisions_with_object(self.player.center_x,self.player.center_y)
+        if self.disabledKeys != [False,False,False,False]:
+          break
       self.player.update(self.screen_width, self.screen_height, self.disabledKeys)
+      
       for securitas_sprite in self.securitas_list:
-        securitas_disableKeys=self.stripline.check_for_collisions_with_player(securitas_sprite.center_x,securitas_sprite.center_y)
-        securitas_sprite.update(self.screen_width, self.screen_height,securitas_disableKeys)
-
+        for curStripeline in self.stripeline_list:
+          securitas_disableKeys = curStripeline.check_for_collisions_with_object(securitas_sprite.center_x,securitas_sprite.center_y)
+        securitas_sprite.update(self.screen_width,self.screen_height,securitas_disableKeys)
        
       self.total_time+=delta_time
 
@@ -236,7 +253,6 @@ class Game(arcade.Window):
               self.username+="@"
             highscore[self.username]=int(self.score)
             save_score(highscore)
-
 
   def on_key_press(self, key, modifiers):
     if(self.game_over==False, self.menu==False, self.highscore==False):

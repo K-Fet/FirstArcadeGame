@@ -92,7 +92,6 @@ class MyGame(arcade.Window):
 			self.player_sprite.change_x=(-MOVEMENT_SPEED)
 		if key == arcade.key.RIGHT:
 			self.player_sprite.change_x=MOVEMENT_SPEED
-			print(self.player_sprite.change_x)
 
 	def on_key_release(self, key, modifiers):
 

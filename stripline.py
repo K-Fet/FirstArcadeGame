@@ -1,5 +1,6 @@
 import arcade
 from data import *
+import math
 
 class stripline():
 	def __init__(self, points):
@@ -10,22 +11,51 @@ class stripline():
 		x2=int(points[1][0])
 		y1=points[0][1]
 		y2=points[1][1]
+
+		distance=math.sqrt((y2-y1)*(y2-y1)+(x2-x1)*(x2-x1))
+		number_of_points=int(0.7*distance)
 		y=0
 		x=0
-		dir_coeff=(y2-y1)/(x2-x1)
-		for x in range (x1,x2,1):
-			y=int(y1+dir_coeff*(x-x1))
+
+		# if x1 == x2:
+		# 	dir_coeff = 1000 # Almost infinite ;)
+		# else:
+		# 	dir_coeff=(y2-y1)/(x2-x1)
+		for i in range(number_of_points):
+			if x1 < x2 and y1 < y2:
+				x = x1 + i * ( ( x2 - x1 ) / number_of_points )
+				y = y1 + i * ( ( y2 - y1 ) / number_of_points )
+			if x1 > x2 and y1 < y2:
+				x = x1 - i * ( ( x1 - x2 ) / number_of_points )
+				y = y1 + i * ( ( y2 - y1 ) / number_of_points )
+			if x1 > x2 and y1 > y2:
+				x = x1 - i * ( ( x1 - x2 ) / number_of_points )
+				y = y1 - i * ( ( y1 - y2 ) / number_of_points )
+			if x1 < x2 and y1 > y2:
+				x = x1 + i * ( ( x2 - x1 ) / number_of_points )
+				y = y1 - i * ( ( y1 - y2 ) / number_of_points )
 			coord=(x,y)
 			self.points_list.append(coord)
 	
-	def check_for_collisions_with_player(self, player_x, player_y):
+	# CHECK COLLISSION WITH OBJECT (x,y)
+	#
+	# player_x: x of the player
+	# player_y: y of the player
+	# return disable: [Bool,Bool,Bool,Bool] 
+	# representing [DISABLE_LEFT,DISABLE_RIGHT,DISABLE_UP,DISABLE_BOTTOM]
+	#
+	def check_for_collisions_with_object(self, object_x, object_y):
 		disabledKeys = [False, False, False, False]
 		for point in self.points_list:
 			x = point[0]
 			y = point[1]
-			dist_x = x - player_x
-			dist_y = y - player_y
-			if abs(dist_x) < 20 and abs(dist_y) < 20:
+
+			dist_x = x - object_x
+			dist_y = y - object_y
+
+			distance=math.sqrt((y-object_y)*(y-object_y)+(x-object_x)*(x-object_x))	
+
+			if distance < 50:
 				if (dist_x > 0): 
 					disabledKeys[1] = True 
 					if disabledKeys[0] : disabledKeys[0] = False
@@ -38,8 +68,9 @@ class stripline():
 				if (dist_y < 0): 
 					disabledKeys[3] = True
 					if disabledKeys[2] : disabledKeys[2] = False
-		return disabledKeys
-
+				if disabledKeys != [False,False,False,False]:
+					return disabledKeys
+		return [False,False,False,False]
 
 		
 
