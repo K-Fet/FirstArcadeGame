@@ -207,7 +207,6 @@ class Game(arcade.Window):
         self.score=self.score*self.total_time
 
         highscore=take_scores()
-        print(len(highscore))
         if len(highscore)<10:
           while self.username in highscore:
             self.username+="@"
