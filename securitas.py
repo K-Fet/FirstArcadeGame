@@ -9,7 +9,7 @@ class securitas(arcade.Sprite):
 		self.center_y=center_y
 		self.can_move=True
 		self.static_time=None
-
+		self.BAC=0
 		
 		securitas_initial_direction=random.randrange(1,5,1)
 		if(securitas_initial_direction==RIGHT):

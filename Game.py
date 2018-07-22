@@ -207,6 +207,7 @@ class Game(arcade.Window):
       
       for securitas_sprites in self.securitas_list:
         secu_vomit_hit_list = arcade.check_for_collision_with_list(securitas_sprite,self.vomit_list)
+        secu_beer_hit_list = arcade.check_for_collision_with_list(securitas_sprite,self.beer_list)
         if len(secu_vomit_hit_list)>0:
           securitas_sprites.static_time=TIME_STATIC
           securitas_sprites.can_move=False
@@ -214,6 +215,11 @@ class Game(arcade.Window):
           securitas_sprites.change_y=0
         for vomit_sprites in secu_vomit_hit_list:
           vomit_sprites.kill()
+        for beer_sprites in secu_beer_hit_list:
+          beer_sprites.kill()
+          securitas_sprite.BAC+=1
+          new_beer_sprite=beer()
+          self.beer_list.append(new_beer_sprite)
 
       for x in range(len(beer_hit_list)):
         beer_sprite=beer()
@@ -234,13 +240,11 @@ class Game(arcade.Window):
         self.score=self.score*self.total_time
 
         highscore=take_scores()
-        print(len(highscore))
         if len(highscore)<10:
           while self.username in highscore:
             self.username+="@"
           highscore[self.username]=int(self.score)
           save_score(highscore)
-          isNewHighscore=True
         else:
           if self.score>highscore[min(highscore,key=highscore.get)]:
             del highscore[min(highscore,key=highscore.get)]
