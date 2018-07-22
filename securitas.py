@@ -18,7 +18,7 @@ class securitas(arcade.Sprite):
 			self.change_y=SECURITAS_SPEED	
 		else :
 			self.change_y=(-SECURITAS_SPEED)
-	def update(self,screen_width,screen_heigth,keys_disable):
+	def update(self,screen_width,screen_heigth,keys_disable=[False,False,False,False]):
 		super().update()	
 
 		securitas_change=random.randrange(1,30,1)

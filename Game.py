@@ -1,10 +1,9 @@
 import arcade 
 from data import *
 from player import *
-from stripline import *
 from beer import *
 from securitas import *
-from map_helper import *
+from map import *
 import os
 import pickle
 import re
@@ -96,7 +95,6 @@ class Game(arcade.Window):
     self.highscore_width=int(10*0.4*self.highscore_height)
   
   def setup(self):
-    self.wall_list = arcade.SpriteList()
     self.player = player(self.screen_width/2,self.screen_height/2)
     self.all_sprite_list=arcade.SpriteList()
 
@@ -117,9 +115,10 @@ class Game(arcade.Window):
     self.player_BAC=0
     self.total_time=0
 
-    self.wall_list = arcade.SpriteList()
-    map_array = get_map("maps/map1.csv")
+    self.map = Map("maps/map1.csv")
     
+    self.physics_engine = arcade.PhysicsEnginePlatformer(self.player,self.map.wall_list,0)
+
   def on_draw(self): 
     arcade.start_render()
 
@@ -167,10 +166,10 @@ class Game(arcade.Window):
       arcade.draw_text(output,self.backmenu_position_x, self.backmenu_position_y, arcade.color.WHITE, self.backmenu_height,align="center",anchor_x="center",anchor_y="center")
 
     else:
-      self.stripline.draw()
       self.beer_list.draw()
       self.all_sprite_list.draw()
       self.player.draw()
+      self.map.wall_list.draw()
 
       minutes=int(self.total_time)//60
       seconds=int(self.total_time)%60
@@ -182,19 +181,17 @@ class Game(arcade.Window):
 
   def update(self, delta_time):
     if (self.game_over == False and self.menu==False and self.highscore==False):
+      self.physics_engine.update()
       self.beer_list.update()
-      self.disabledKeys = self.stripline.check_for_collisions_with_player(self.player.center_x, self.player.center_y) 
-    
-      self.player.update(self.screen_width, self.screen_height, self.disabledKeys)
+      # self.player.update(self.screen_width, self.screen_height)
       for securitas_sprite in self.securitas_list:
-        securitas_disableKeys=self.stripline.check_for_collisions_with_player(securitas_sprite.center_x,securitas_sprite.center_y)
-        securitas_sprite.update(self.screen_width, self.screen_height,securitas_disableKeys)
-
+        securitas_sprite.update(self.screen_width, self.screen_height)
        
       self.total_time+=delta_time
 
       securitas_hit_list = arcade.check_for_collision_with_list(self.player,self.securitas_list)
       beer_hit_list = arcade.check_for_collision_with_list(self.player,self.beer_list)
+
       for x in range(len(beer_hit_list)):
         beer_sprite=beer()
         self.beer_list.append(beer_sprite)
@@ -204,6 +201,7 @@ class Game(arcade.Window):
         if self.player_BAC>5 and self.score<BEER_CONVERGENCE:
           beer_sprite=beer()
           self.beer_list.append(beer_sprite)
+
       if len(securitas_hit_list)>0 :
         self.game_over=True   
         self.score=self.score*self.total_time
