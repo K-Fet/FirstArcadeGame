@@ -4,6 +4,7 @@ from player import *
 from stripline import *
 from beer import *
 from securitas import *
+from vomit import *
 import os
 import pickle
 import re
@@ -37,14 +38,15 @@ class Game(arcade.Window):
     self.screen_width,self.screen_height = self.get_size()
 
 # Sprites
-    self.username="Bd"
+    
     self.player = None
-    self.player_BAC= None
     
     self.beer_list= None
 
     self.securitas_sprite = None
     self.securitas_list = None
+
+    self.vomit_list=None
 
     self.all_sprite_list = None
 
@@ -99,10 +101,10 @@ class Game(arcade.Window):
     linepoints = ((0,0),(self.screen_width/2, self.screen_height/2))
     self.stripline = stripline(linepoints)
     self.player = player(self.screen_width/2,self.screen_height/2)
+    self.player.can_move=True
     self.all_sprite_list=arcade.SpriteList()
 
     self.beer_list=arcade.SpriteList()
-
     beer_sprite=beer()
     self.beer_list.append(beer_sprite)
 
@@ -113,9 +115,11 @@ class Game(arcade.Window):
     self.securitas=securitas(220,675)
     self.securitas_list.append(self.securitas)
     self.all_sprite_list.append(self.securitas)
-    
+
+    self.vomit_list=arcade.SpriteList()
+
     self.score=0
-    self.player_BAC=0
+    self.player.BAC=0
     self.total_time=0
     
   def on_draw(self): 
@@ -167,6 +171,7 @@ class Game(arcade.Window):
     else:
       self.stripline.draw()
       self.beer_list.draw()
+      self.vomit_list.draw()
       self.all_sprite_list.draw()
       self.player.draw()
 
@@ -181,27 +186,49 @@ class Game(arcade.Window):
   def update(self, delta_time):
     if (self.game_over == False and self.menu==False and self.highscore==False):
       self.beer_list.update()
+
       self.disabledKeys = self.stripline.check_for_collisions_with_player(self.player.center_x, self.player.center_y) 
-    
-      self.player.update(self.screen_width, self.screen_height, self.disabledKeys)
+      self.player.update(self.screen_width, self.screen_height, self.disabledKeys,delta_time)
+      
       for securitas_sprite in self.securitas_list:
         securitas_disableKeys=self.stripline.check_for_collisions_with_player(securitas_sprite.center_x,securitas_sprite.center_y)
-        securitas_sprite.update(self.screen_width, self.screen_height,securitas_disableKeys)
+        securitas_sprite.update(self.screen_width, self.screen_height,securitas_disableKeys,delta_time)
 
-       
+      for vomit_sprites in self.vomit_list : 
+        vomit_sprites.life-=delta_time
+        if vomit_sprites.life<0:
+          vomit_sprites.kill()
+
       self.total_time+=delta_time
 
       securitas_hit_list = arcade.check_for_collision_with_list(self.player,self.securitas_list)
       beer_hit_list = arcade.check_for_collision_with_list(self.player,self.beer_list)
+      vomit_hit_list = arcade.check_for_collision_with_list(self.player,self.vomit_list)
+      
+      for securitas_sprites in self.securitas_list:
+        secu_vomit_hit_list = arcade.check_for_collision_with_list(securitas_sprite,self.vomit_list)
+        if len(secu_vomit_hit_list)>0:
+          securitas_sprites.static_time=TIME_STATIC
+          securitas_sprites.can_move=False
+          securitas_sprites.change_x=0
+          securitas_sprites.change_y=0
+        for vomit_sprites in secu_vomit_hit_list:
+          vomit_sprites.kill()
+
       for x in range(len(beer_hit_list)):
         beer_sprite=beer()
         self.beer_list.append(beer_sprite)
       for beer_sprite_hit in beer_hit_list:
         beer_sprite_hit.kill()
-        self.player_BAC+=1
-        if self.player_BAC>5 and self.score<BEER_CONVERGENCE:
+        self.player.BAC+=1
+        if self.player.BAC>5 and self.score<BEER_CONVERGENCE:
           beer_sprite=beer()
           self.beer_list.append(beer_sprite)
+     
+      if len(vomit_hit_list)>0:
+        self.player.can_move=False
+        self.player.static_time=TIME_STATIC
+
       if len(securitas_hit_list)>0 :
         self.game_over=True   
         self.score=self.score*self.total_time
@@ -217,34 +244,40 @@ class Game(arcade.Window):
         else:
           if self.score>highscore[min(highscore,key=highscore.get)]:
             del highscore[min(highscore,key=highscore.get)]
-            while self.username in highscore:
-              self.username+="@"
+            while self.player.username in highscore:
+              self.player.username+="@"
             highscore[self.username]=int(self.score)
             save_score(highscore)
 
 
   def on_key_press(self, key, modifiers):
     if(self.game_over==False, self.menu==False, self.highscore==False):
-      if key == arcade.key.UP:
-        self.player.change_y = MOVEMENT_SPEED
-      if key == arcade.key.DOWN:
-        self.player.change_y = -MOVEMENT_SPEED
-      if key == arcade.key.LEFT:
-        self.player.change_x = -MOVEMENT_SPEED
-      if key == arcade.key.RIGHT:
-        self.player.change_x = MOVEMENT_SPEED
+      if(self.player.can_move):
+        if key == arcade.key.UP:
+          self.player.change_y = MOVEMENT_SPEED
+        if key == arcade.key.DOWN:
+          self.player.change_y = -MOVEMENT_SPEED
+        if key == arcade.key.LEFT:
+          self.player.change_x = -MOVEMENT_SPEED
+        if key == arcade.key.RIGHT:
+          self.player.change_x = MOVEMENT_SPEED
 
 
 
   def on_key_release(self, key, modifiers):
-    if key == arcade.key.UP or key == arcade.key.DOWN:
-      self.player.change_y = 0
-    if key == arcade.key.LEFT or key == arcade.key.RIGHT:
-      self.player.change_x = 0
-    if key == arcade.key.TAB:
-        self.score+=self.player_BAC
-        self.player_BAC=0
-      
+    if(self.game_over==False, self.menu==False, self.highscore==False):
+      if key == arcade.key.UP or key == arcade.key.DOWN:
+        self.player.change_y = 0
+      if key == arcade.key.LEFT or key == arcade.key.RIGHT:
+        self.player.change_x = 0
+      if key == arcade.key.TAB and self.player.BAC>0:
+          self.score+=self.player.BAC
+          self.player.BAC=0
+          vomit_sprite=vomit(self.player.center_x+self.player.change_x*10,self.player.center_y+self.player.change_y*10)
+          self.vomit_list.append(vomit_sprite)
+
+          
+          
   def on_mouse_press(self,x,y,button,modifiers):
     if self.game_over :
       if x < self.restart_position_x + self.restart_width and x > self.restart_position_x - self.restart_width and y < self.restart_position_y + self.restart_height and y > self.restart_position_y - self.restart_height :
