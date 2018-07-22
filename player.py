@@ -14,7 +14,7 @@ class player(arcade.Sprite):
 	def update(self, delta_time):
 		## reset the change_x before updating if player is on screen limit
 		if self.can_move == False:
-			if self.static_time<0:
+			if self.static_time <= 0:
 				self.can_move=True
 			else :
 				self.static_time-=delta_time

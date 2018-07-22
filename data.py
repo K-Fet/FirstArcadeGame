@@ -7,8 +7,8 @@ FULLSCREEN = False
 BORDERS_OFFSET = 15
 
 MOVEMENT_SPEED = 5
-SECURITAS_SPEED = 5
-TIME_STATIC=2 #time during the player can't move before have walked on vomit
+SECURITAS_SPEED = 2
+TIME_STATIC=0.02 #time during the player can't move before have walked on vomit
 
 SPRITE_SCALING_BEER=0.100
 SPRITE_SCALING_SECURITAS=0.35

@@ -39,7 +39,7 @@ class Game(arcade.Window):
     self.screen_width,self.screen_height = self.get_size()
 
     # Sprites
-    self.username="Coco & Bd"
+    self.username="Bd"
     self.player = None
     
     self.beer_list= None
@@ -250,17 +250,22 @@ class Game(arcade.Window):
           securitas_sprite.BAC+=1
           new_beer_sprite=beer()
           self.beer_list.append(new_beer_sprite)
-
-      for x in range(len(beer_hit_list)):
-        beer_sprite=beer()
-        self.beer_list.append(beer_sprite)
-
-      for beer_sprite_hit in beer_hit_list:
-        beer_sprite_hit.kill()
-        self.player.BAC+=1
-        if self.player.BAC>5 and self.score<BEER_CONVERGENCE:
+      
+      # generate new beer if collision with player
+      if len(beer_hit_list) > 0: 
+        new_beer = beer()
+        self.beer_list.append(new_beer)
+      
+      # ???? More beers ?
+      if self.player.BAC>5 and len(self.beer_list) < 10:
           beer_sprite=beer()
           self.beer_list.append(beer_sprite)
+
+      for beer_sprite_hit in beer_hit_list:
+        print("BEER KILL")
+        beer_sprite_hit.kill()
+        self.player.BAC+=1
+        
      
       if len(vomit_hit_list)>0:
         self.player.can_move=False
