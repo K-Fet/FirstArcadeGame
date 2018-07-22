@@ -122,6 +122,8 @@ class Game(arcade.Window):
       i+=1
 
     self.player = player(self.screen_width/2,self.screen_height/2)
+    self.disabledKeys = [False,False,False,False]
+
     self.all_sprite_list=arcade.SpriteList()
     self.background = arcade.load_texture("img/map1_1280.png")
 
@@ -211,10 +213,18 @@ class Game(arcade.Window):
     if (self.game_over == False and self.menu==False and self.highscore==False):
       self.beer_list.update()
       for curStripeline in self.stripeline_list:
-        self.disabledKeys = curStripeline.check_for_collisions_with_object(self.player.center_x,self.player.center_y)
-        if self.disabledKeys != [False,False,False,False]:
-          break
+        disabledKeys = curStripeline.check_for_collisions_with_object(self.player.center_x,self.player.center_y)
+        if disabledKeys != [False,False,False,False]:
+          if self.disabledKeys[0] or disabledKeys[0]:
+            self.disabledKeys[0] = True
+          if self.disabledKeys[1] or disabledKeys[1]:
+            self.disabledKeys[1] = True
+          if self.disabledKeys[2] or disabledKeys[2]:
+            self.disabledKeys[2] = True
+          if self.disabledKeys[2] or disabledKeys[2]:
+            self.disabledKeys[2] = True
       self.player.update(self.screen_width, self.screen_height, self.disabledKeys)
+      self.disabledKeys = [False,False,False,False]
       
       for securitas_sprite in self.securitas_list:
         for curStripeline in self.stripeline_list:

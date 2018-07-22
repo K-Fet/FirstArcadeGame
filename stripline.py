@@ -17,25 +17,27 @@ class stripline():
 		y=0
 		x=0
 
-		# if x1 == x2:
-		# 	dir_coeff = 1000 # Almost infinite ;)
-		# else:
-		# 	dir_coeff=(y2-y1)/(x2-x1)
 		for i in range(number_of_points):
-			if x1 < x2 and y1 < y2:
+			if x1 <= x2 and y1 <= y2:
 				x = x1 + i * ( ( x2 - x1 ) / number_of_points )
 				y = y1 + i * ( ( y2 - y1 ) / number_of_points )
-			if x1 > x2 and y1 < y2:
+			if x1 >= x2 and y1 <= y2:
 				x = x1 - i * ( ( x1 - x2 ) / number_of_points )
 				y = y1 + i * ( ( y2 - y1 ) / number_of_points )
-			if x1 > x2 and y1 > y2:
+			if x1 >= x2 and y1 >= y2:
 				x = x1 - i * ( ( x1 - x2 ) / number_of_points )
 				y = y1 - i * ( ( y1 - y2 ) / number_of_points )
-			if x1 < x2 and y1 > y2:
+			if x1 <= x2 and y1 >= y2:
 				x = x1 + i * ( ( x2 - x1 ) / number_of_points )
 				y = y1 - i * ( ( y1 - y2 ) / number_of_points )
 			coord=(x,y)
 			self.points_list.append(coord)
+
+			# if y1 == y2 and y1 == 186:
+			# 	print(number_of_points)
+			# 	print("Point 1 ",x1,y1)
+			# 	print("Point 2 ",x2,y2)
+			# 	print("Points list ",self.points_list)
 	
 	# CHECK COLLISSION WITH OBJECT (x,y)
 	#
@@ -55,7 +57,14 @@ class stripline():
 
 			distance=math.sqrt((y-object_y)*(y-object_y)+(x-object_x)*(x-object_x))	
 
-			if distance < 50:
+			# Fix
+			# if y == 186:
+			# 	print("x y: ",x,y)
+			# 	print("Distance : ",distance)
+			# 	print("dist_x : ",dist_x)
+			# 	print("dist_y : ",dist_y)
+
+			if distance < 30:
 				if (dist_x > 0): 
 					disabledKeys[1] = True 
 					if disabledKeys[0] : disabledKeys[0] = False
