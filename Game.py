@@ -4,11 +4,11 @@ from player import *
 from stripline import *
 from beer import *
 from securitas import *
+from map_helper import *
 import os
 import pickle
 import re
 import operator
-
 
 def take_scores():
   
@@ -96,8 +96,7 @@ class Game(arcade.Window):
     self.highscore_width=int(10*0.4*self.highscore_height)
   
   def setup(self):
-    linepoints = ((0,0),(self.screen_width/2, self.screen_height/2))
-    self.stripline = stripline(linepoints)
+    self.wall_list = arcade.SpriteList()
     self.player = player(self.screen_width/2,self.screen_height/2)
     self.all_sprite_list=arcade.SpriteList()
 
@@ -117,6 +116,9 @@ class Game(arcade.Window):
     self.score=0
     self.player_BAC=0
     self.total_time=0
+
+    self.wall_list = arcade.SpriteList()
+    map_array = get_map("maps/map1.csv")
     
   def on_draw(self): 
     arcade.start_render()
