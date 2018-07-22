@@ -1,15 +1,15 @@
 import arcade 
+import os
 from data import *
 from player import *
-from stripline import *
 from beer import *
 from securitas import *
 from vomit import *
+from map import *
 import os
 import pickle
 import re
 import operator
-
 
 def take_scores():
   
@@ -32,13 +32,14 @@ class Game(arcade.Window):
 
   def __init__(self,screen_width=SCREEN_WIDTH,screen_height=SCREEN_HEIGHT):
     super().__init__(screen_width, screen_height, fullscreen=FULLSCREEN)
-    arcade.set_background_color(arcade.color.AMAZON)
-
-# To be responsive
+    
+    self.player = None
+    
+    # To be responsive
     self.screen_width,self.screen_height = self.get_size()
 
-# Sprites
-    
+    # Sprites
+    self.username="Coco & Bd"
     self.player = None
     
     self.beer_list= None
@@ -50,12 +51,12 @@ class Game(arcade.Window):
 
     self.all_sprite_list = None
 
-# Windows 
+    # Windows 
     self.game_over = False
     self.menu = True
     self.highscore = False
 
-# Statics graphics elements organisation 
+    # Statics graphics elements organisation 
     self.line_break=screen_height/5
 
     self.play_position_x=self.screen_width / 2
@@ -96,32 +97,54 @@ class Game(arcade.Window):
     self.highscore_position_y=self.screen_height - self.line_break/4
     self.highscore_height=54
     self.highscore_width=int(10*0.4*self.highscore_height)
+    
+    # Background image will be stored in this variable
+    self.background = None
+
+    # Set the working directory (where we expect to find files) to the same
+    # directory this .py file is in.
+    file_path = os.path.dirname(os.path.abspath(__file__))
+    os.chdir(file_path)
   
   def setup(self):
-    linepoints = ((0,0),(self.screen_width/2, self.screen_height/2))
-    self.stripline = stripline(linepoints)
     self.player = player(self.screen_width/2,self.screen_height/2)
     self.player.can_move=True
+
+    # Sprite lists SETUP
     self.all_sprite_list=arcade.SpriteList()
-
     self.beer_list=arcade.SpriteList()
-    beer_sprite=beer()
-    self.beer_list.append(beer_sprite)
-
-    self.securitas_list=arcade.SpriteList()
-    self.securitas=securitas(1070,110)
-    self.securitas_list.append(self.securitas)
-    self.all_sprite_list.append(self.securitas)
-    self.securitas=securitas(220,675)
-    self.securitas_list.append(self.securitas)
-    self.all_sprite_list.append(self.securitas)
-
     self.vomit_list=arcade.SpriteList()
 
+    self.background = arcade.load_texture("img/map1_1280.png")
+
+    beer_sprite=beer(self.screen_width//2, self.screen_height//2)
+    self.beer_list.append(beer_sprite)
+    
     self.score=0
     self.player.BAC=0
     self.total_time=0
-    
+
+    self.map = Map("maps/map1.csv")
+
+    self.physic_engines_list = list()
+
+    self.physic_engines_list.append(arcade.PhysicsEngineSimple(self.player,self.map.wall_list))
+
+    # Secu
+    securitas_1 = securitas(self.screen_width // 2 + 250,self.screen_height // 2 - 100)
+    securitas_2 = securitas(self.screen_width // 2 - 250,self.screen_height // 2 + 250)
+    self.securitas_list=arcade.SpriteList()
+
+    self.securitas_list.append(securitas_1)
+    self.securitas_list.append(securitas_2)
+
+    self.all_sprite_list.append(securitas_1)
+    self.all_sprite_list.append(securitas_2)
+
+    # Physic engines setup
+    self.physic_engines_list.append(arcade.PhysicsEngineSimple(securitas_1,self.map.wall_list))
+    self.physic_engines_list.append(arcade.PhysicsEngineSimple(securitas_2,self.map.wall_list))
+
   def on_draw(self): 
     arcade.start_render()
 
@@ -169,11 +192,15 @@ class Game(arcade.Window):
       arcade.draw_text(output,self.backmenu_position_x, self.backmenu_position_y, arcade.color.WHITE, self.backmenu_height,align="center",anchor_x="center",anchor_y="center")
 
     else:
-      self.stripline.draw()
+      # Background
+      arcade.draw_texture_rectangle(self.screen_width // 2, self.screen_height // 2,
+                                      self.screen_width, self.screen_height, self.background)
+
       self.beer_list.draw()
       self.vomit_list.draw()
       self.all_sprite_list.draw()
       self.player.draw()
+      self.map.wall_list.draw()
 
       minutes=int(self.total_time)//60
       seconds=int(self.total_time)%60
@@ -187,17 +214,20 @@ class Game(arcade.Window):
     if (self.game_over == False and self.menu==False and self.highscore==False):
       self.beer_list.update()
 
-      self.disabledKeys = self.stripline.check_for_collisions_with_player(self.player.center_x, self.player.center_y) 
-      self.player.update(self.screen_width, self.screen_height, self.disabledKeys,delta_time)
-      
-      for securitas_sprite in self.securitas_list:
-        securitas_disableKeys=self.stripline.check_for_collisions_with_player(securitas_sprite.center_x,securitas_sprite.center_y)
-        securitas_sprite.update(self.screen_width, self.screen_height,securitas_disableKeys,delta_time)
-
       for vomit_sprites in self.vomit_list : 
         vomit_sprites.life-=delta_time
         if vomit_sprites.life<0:
           vomit_sprites.kill()
+
+      # Manual updates
+
+      self.player.update(delta_time)
+      for securitas in self.securitas_list:
+        securitas.update(delta_time)
+
+      # PHYSIC ENGINE UPDATE
+      for physics_engine in self.physic_engines_list:
+        physics_engine.update()
 
       self.total_time+=delta_time
 
@@ -205,14 +235,14 @@ class Game(arcade.Window):
       beer_hit_list = arcade.check_for_collision_with_list(self.player,self.beer_list)
       vomit_hit_list = arcade.check_for_collision_with_list(self.player,self.vomit_list)
       
-      for securitas_sprites in self.securitas_list:
+      for securitas_sprite in self.securitas_list:
         secu_vomit_hit_list = arcade.check_for_collision_with_list(securitas_sprite,self.vomit_list)
         secu_beer_hit_list = arcade.check_for_collision_with_list(securitas_sprite,self.beer_list)
         if len(secu_vomit_hit_list)>0:
-          securitas_sprites.static_time=TIME_STATIC
-          securitas_sprites.can_move=False
-          securitas_sprites.change_x=0
-          securitas_sprites.change_y=0
+          securitas_sprite.static_time=TIME_STATIC
+          securitas_sprite.can_move=False
+          securitas_sprite.change_x=0
+          securitas_sprite.change_y=0
         for vomit_sprites in secu_vomit_hit_list:
           vomit_sprites.kill()
         for beer_sprites in secu_beer_hit_list:
@@ -224,6 +254,7 @@ class Game(arcade.Window):
       for x in range(len(beer_hit_list)):
         beer_sprite=beer()
         self.beer_list.append(beer_sprite)
+
       for beer_sprite_hit in beer_hit_list:
         beer_sprite_hit.kill()
         self.player.BAC+=1
@@ -252,7 +283,6 @@ class Game(arcade.Window):
               self.player.username+="@"
             highscore[self.username]=int(self.score)
             save_score(highscore)
-
 
   def on_key_press(self, key, modifiers):
     if(self.game_over==False, self.menu==False, self.highscore==False):
