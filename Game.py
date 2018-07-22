@@ -116,22 +116,31 @@ class Game(arcade.Window):
 
     beer_sprite=beer()
     self.beer_list.append(beer_sprite)
-
-    self.securitas_list=arcade.SpriteList()
-    self.securitas=securitas(1070,110)
-    self.securitas_list.append(self.securitas)
-    self.all_sprite_list.append(self.securitas)
-    self.securitas=securitas(220,675)
-    self.securitas_list.append(self.securitas)
-    self.all_sprite_list.append(self.securitas)
     
     self.score=0
     self.player_BAC=0
     self.total_time=0
 
     self.map = Map("maps/map1.csv")
-    
-    self.physics_engine = arcade.PhysicsEnginePlatformer(self.player,self.map.wall_list,0)
+
+    self.physic_engines_list = list()
+
+    self.physic_engines_list.append(arcade.PhysicsEngineSimple(self.player,self.map.wall_list))
+
+    # Secu
+    securitas_1 = securitas(self.screen_width // 2 + 250,self.screen_height // 2 - 100)
+    securitas_2 = securitas(self.screen_width // 2 - 250,self.screen_height // 2 + 250)
+    self.securitas_list=arcade.SpriteList()
+
+    self.securitas_list.append(securitas_1)
+    self.securitas_list.append(securitas_2)
+
+    self.all_sprite_list.append(securitas_1)
+    self.all_sprite_list.append(securitas_2)
+
+    # Physic engines setup
+    self.physic_engines_list.append(arcade.PhysicsEngineSimple(securitas_1,self.map.wall_list))
+    self.physic_engines_list.append(arcade.PhysicsEngineSimple(securitas_2,self.map.wall_list))
 
   def on_draw(self): 
     arcade.start_render()
@@ -199,11 +208,10 @@ class Game(arcade.Window):
 
   def update(self, delta_time):
     if (self.game_over == False and self.menu==False and self.highscore==False):
-      self.physics_engine.update()
-      self.beer_list.update()
       
-      for securitas_sprite in self.securitas_list:
-        securitas_sprite.update(self.screen_width, self.screen_height)
+      # PHYSIC ENGINE UPDATE
+      for physics_engine in self.physic_engines_list:
+        physics_engine.update()
        
       self.total_time+=delta_time
 

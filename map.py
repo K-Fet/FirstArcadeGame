@@ -33,7 +33,7 @@ class Map:
         elif item == 0:
           wall = arcade.Sprite("img/wall.png", scalling)
 
-        wall.right = column_index * 20
+        wall.right = (column_index + 1) * 20
         wall.top = (len(row) - row_index) * 20 - 560
         wall_list.append(wall)
 
