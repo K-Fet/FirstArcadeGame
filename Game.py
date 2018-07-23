@@ -43,8 +43,10 @@ class Game(arcade.Window):
     # Sprites
     self.username="Coco & BD"
     self.player = None   # player object
-    
+
     self.beer_list= None # list of beers objects
+
+    self.current_beer_number = None
 
     self.securitas_list = None # list of securistas objects
 
@@ -116,6 +118,7 @@ class Game(arcade.Window):
     self.vomit_list=arcade.SpriteList()
 
     beer_sprite=beer(self.screen_width//2, self.screen_height//2)
+    self.current_beer_number = 1
     self.beer_list.append(beer_sprite)
 
     securitas_1 = securitas(self.screen_width // 2 + 250,self.screen_height // 2 - 100)
@@ -258,6 +261,23 @@ class Game(arcade.Window):
           securitas_sprite.BAC+=1
           new_beer_sprite=beer()
           self.beer_list.append(new_beer_sprite)
+      
+      # generate current_beer_number 
+      if self.total_time//BEER_GENERATION_COEFF<1:
+        if self.total_time > 30 and self.total_time < 60:
+          self.current_beer_number = 2
+        else:
+          self.current_beer_number = 1 
+      else :
+         self.current_beer_number = self.total_time//BEER_GENERATION_COEFF
+
+      # Beer boost 
+      self.current_beer_number += (self.player.BAC//BEER_BOOST_COEFF if self.player.BAC//BEER_BOOST_COEFF <= MAX_BAC_BOOST else SECOND_STEP_MAX_BAC_BOOST if self.total_time > TOTAL_TIME_SECOND_STEP else MAX_BAC_BOOST)
+
+      # Beer generation
+      if len(self.beer_list) < self.current_beer_number and random.randint(0, BEER_DELAY) == 2:
+        newBeer = beer()
+        self.beer_list.append(newBeer) 
 
       # Handle beers collapsed by player
       beer_hit_list = arcade.check_for_collision_with_list(self.player,self.beer_list)
