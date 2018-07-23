@@ -329,7 +329,7 @@ class Game(arcade.Window):
           self.player.BAC=0
           self.player.invincible = True
           self.player.invincible_time=TIME_INVINCIBLE
-          vomit_sprite=vomit(self.player.center_x+self.player.change_x*20,self.player.center_y+self.player.change_y*20)
+          vomit_sprite=vomit(self.player.center_x,self.player.center_y)
           self.vomit_list.append(vomit_sprite)
 
           

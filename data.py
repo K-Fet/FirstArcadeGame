@@ -8,12 +8,15 @@ BORDERS_OFFSET = 15
 
 MOVEMENT_SPEED = 5
 SECURITAS_SPEED = 2
-TIME_STATIC=2 #time during the player can't move before have walked on vomit
 
-# Define the duration of the invincible capability of the player. *
+# Define the duration (sec) of the CAN'T_MOVE capability of the player/securitas.
+# This capability is set to True when the player/securitas hit a vomit.
+TIME_STATIC=3 
+
+# Define the duration (sec) of the invincible capability of the player.
 # This capability is set to True when the player vomit.
 # The player is can't hit a vomit when he is invincible 
-TIME_INVINCIBLE=10
+TIME_INVINCIBLE=1
 
 SPRITE_SCALING_BEER=0.100
 SPRITE_SCALING_SECURITAS=0.35
