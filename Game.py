@@ -43,6 +43,7 @@ class Game(arcade.Window):
     self.player = None
     
     self.beer_list= None
+    self.current_beer_number = None
 
     self.securitas_sprite = None
     self.securitas_list = None
@@ -118,6 +119,7 @@ class Game(arcade.Window):
     self.background = arcade.load_texture("img/map1_1280.png")
 
     beer_sprite=beer(self.screen_width//2, self.screen_height//2)
+    self.current_beer_number = 1
     self.beer_list.append(beer_sprite)
     
     self.score=0
@@ -251,15 +253,23 @@ class Game(arcade.Window):
           new_beer_sprite=beer()
           self.beer_list.append(new_beer_sprite)
       
-      # generate new beer if collision with player
-      if len(beer_hit_list) > 0: 
-        new_beer = beer()
-        self.beer_list.append(new_beer)
-      
-      # ???? More beers ?
-      if self.player.BAC>5 and len(self.beer_list) < 10:
-          beer_sprite=beer()
-          self.beer_list.append(beer_sprite)
+      # generate current_beer_number 
+      if self.total_time//BEER_GENERATION_COEFF<1:
+        if self.total_time > 30 and self.total_time < 60:
+          self.current_beer_number = 2
+        else:
+          self.current_beer_number = 1 
+      else :
+         self.current_beer_number = self.total_time//BEER_GENERATION_COEFF
+
+      # Beer boost 
+      self.current_beer_number += (self.player.BAC//BEER_BOOST_COEFF if self.player.BAC//BEER_BOOST_COEFF <= MAX_BAC_BOOST else SECOND_STEP_MAX_BAC_BOOST if self.total_time > TOTAL_TIME_SECOND_STEP else MAX_BAC_BOOST)
+
+      # Beer generation
+      if len(self.beer_list) < self.current_beer_number and random.randint(0, BEER_DELAY) == 2:
+        newBeer = beer()
+        self.beer_list.append(newBeer) 
+
 
       for beer_sprite_hit in beer_hit_list:
         print("BEER KILL")

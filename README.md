@@ -5,7 +5,7 @@ A simple arcade game coded in Python.
 
 ### Require
 
-- `Python 3` latest release
+- `Python 3` 3.6+
 - `pipenv`: Follow [documentation](https://packaging.python.org/tutorials/managing-dependencies/) instructions
 
 ### Installation
