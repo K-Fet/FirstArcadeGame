@@ -41,7 +41,7 @@ class Game(arcade.Window):
     self.screen_width,self.screen_height = self.get_size()
 
     # Sprites
-    self.username="Bd"
+    self.username="Coco & BD"
     self.player = None   # player object
     
     self.beer_list= None # list of beers objects
@@ -262,7 +262,6 @@ class Game(arcade.Window):
       # Handle beers collapsed by player
       beer_hit_list = arcade.check_for_collision_with_list(self.player,self.beer_list)
       for beer_sprite_hit in beer_hit_list:
-        print("BEER KILL")
         beer_sprite_hit.kill()
         self.player.BAC+=1
       # Generate new beer if collision with player
@@ -277,9 +276,11 @@ class Game(arcade.Window):
 
       # Handle player if he walks on a vomit
       vomit_hit_list = arcade.check_for_collision_with_list(self.player,self.vomit_list) 
-      if len(vomit_hit_list)>0:
-        self.player.can_move=False
-        self.player.static_time=TIME_STATIC
+      for vommit in vomit_hit_list:
+        if self.player.invincible == False:
+          vommit.kill()
+          self.player.can_move=False
+          self.player.static_time=TIME_STATIC
 
       # Result of a collision between a player and a securitas
       # # GameOver menu opened
@@ -326,7 +327,9 @@ class Game(arcade.Window):
       if key == arcade.key.TAB and self.player.BAC>0:
           self.score+=self.player.BAC
           self.player.BAC=0
-          vomit_sprite=vomit(self.player.center_x+self.player.change_x*10,self.player.center_y+self.player.change_y*10)
+          self.player.invincible = True
+          self.player.invincible_time=TIME_INVINCIBLE
+          vomit_sprite=vomit(self.player.center_x+self.player.change_x*20,self.player.center_y+self.player.change_y*20)
           self.vomit_list.append(vomit_sprite)
 
           
