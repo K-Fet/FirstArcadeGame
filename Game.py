@@ -212,8 +212,8 @@ class Game(arcade.Window):
       # Score and current time display
       output_score=f"Score: {int(self.score)}"
       output_time=f"Time: {minutes:02d}:{seconds:02d}"
-      arcade.draw_text(output_score,10,20,arcade.color.RED,14)
-      arcade.draw_text(output_time,10,50,arcade.color.RED,14)
+      arcade.draw_text(output_score,620,100,arcade.color.WHITE,18)
+      arcade.draw_text(output_time,620,50,arcade.color.WHITE,18)
 
   def update(self, delta_time):
     # During the game
