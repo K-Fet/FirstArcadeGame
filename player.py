@@ -18,3 +18,4 @@ class player(arcade.Sprite):
 				self.can_move=True
 			else :
 				self.static_time-=delta_time
+		

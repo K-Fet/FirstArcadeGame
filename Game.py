@@ -11,6 +11,7 @@ import pickle
 import re
 import operator
 
+# Function which allow to recover highscores saved
 def take_scores():
   
     if os.path.exists(HIGHSCORE_FILE) and os.path.getsize(HIGHSCORE_FILE) > 0: # File exists
@@ -22,6 +23,7 @@ def take_scores():
         scores = {}
     return scores
 
+# Function which allow to save highscores updated
 def save_score(scores):
   highscore = open(HIGHSCORE_FILE, "wb") # On écrase les anciens scores
   mon_pickler = pickle.Pickler(highscore)
@@ -40,16 +42,13 @@ class Game(arcade.Window):
 
     # Sprites
     self.username="Bd"
-    self.player = None
+    self.player = None   # player object
     
-    self.beer_list= None
+    self.beer_list= None # list of beers objects
 
-    self.securitas_sprite = None
-    self.securitas_list = None
+    self.securitas_list = None # list of securistas objects
 
-    self.vomit_list=None
-
-    self.all_sprite_list = None
+    self.vomit_list=None # list of vomits object
 
     # Windows 
     self.game_over = False
@@ -107,21 +106,30 @@ class Game(arcade.Window):
     os.chdir(file_path)
   
   def setup(self):
+    # Player setup
     self.player = player(self.screen_width/2,self.screen_height/2)
     self.player.can_move=True
+    self.player.BAC=0 # alcoholism
 
     # Sprite lists SETUP
-    self.all_sprite_list=arcade.SpriteList()
     self.beer_list=arcade.SpriteList()
     self.vomit_list=arcade.SpriteList()
 
-    self.background = arcade.load_texture("img/map1_1280.png")
-
     beer_sprite=beer(self.screen_width//2, self.screen_height//2)
     self.beer_list.append(beer_sprite)
-    
+
+    securitas_1 = securitas(self.screen_width // 2 + 250,self.screen_height // 2 - 100)
+    securitas_2 = securitas(self.screen_width // 2 - 250,self.screen_height // 2 + 250)
+    self.securitas_list=arcade.SpriteList()
+
+    self.securitas_list.append(securitas_1)
+    self.securitas_list.append(securitas_2)
+
+    # Map loaded
+    self.background = arcade.load_texture("img/map1_1280.png")
+
+    # Window SETUP
     self.score=0
-    self.player.BAC=0
     self.total_time=0
 
     self.map = Map("maps/map1.csv")
@@ -130,24 +138,15 @@ class Game(arcade.Window):
 
     self.physic_engines_list.append(arcade.PhysicsEngineSimple(self.player,self.map.wall_list))
 
-    # Secu
-    securitas_1 = securitas(self.screen_width // 2 + 250,self.screen_height // 2 - 100)
-    securitas_2 = securitas(self.screen_width // 2 - 250,self.screen_height // 2 + 250)
-    self.securitas_list=arcade.SpriteList()
-
-    self.securitas_list.append(securitas_1)
-    self.securitas_list.append(securitas_2)
-
-    self.all_sprite_list.append(securitas_1)
-    self.all_sprite_list.append(securitas_2)
-
     # Physic engines setup
     self.physic_engines_list.append(arcade.PhysicsEngineSimple(securitas_1,self.map.wall_list))
     self.physic_engines_list.append(arcade.PhysicsEngineSimple(securitas_2,self.map.wall_list))
 
   def on_draw(self): 
+   
     arcade.start_render()
 
+    # GameOver display
     if self.game_over :
        
       score=self.score*self.total_time
@@ -164,6 +163,7 @@ class Game(arcade.Window):
       output = "high score"
       arcade.draw_text(output,self.backhighscore_position_x, self.backhighscore_position_y, arcade.color.WHITE, self.backhighscore_height,align="center",anchor_x="center",anchor_y="center")
 
+    # Menu display
     elif (self.menu):
       output = "Play"
       arcade.draw_text(output, self.play_position_x, self.play_position_y, arcade.color.WHITE, self.play_height,align="center",anchor_x="center",anchor_y="center")
@@ -174,6 +174,7 @@ class Game(arcade.Window):
       output = "Quit"
       arcade.draw_text(output, self.quit_position_x, self.quit_position_y, arcade.color.WHITE, self.quit_height,align="center",anchor_x="center",anchor_y="center")
 
+    # Highscore display
     elif (self.highscore):
       output = "High Score"
       arcade.draw_text(output, self.highscore_position_x, self.highscore_position_y,arcade.color.WHITE, self.highscore_height,align="center",anchor_x="center",anchor_y="center")
@@ -191,37 +192,49 @@ class Game(arcade.Window):
       output = "menu"
       arcade.draw_text(output,self.backmenu_position_x, self.backmenu_position_y, arcade.color.WHITE, self.backmenu_height,align="center",anchor_x="center",anchor_y="center")
 
+    # Game display
     else:
       # Background
       arcade.draw_texture_rectangle(self.screen_width // 2, self.screen_height // 2,
                                       self.screen_width, self.screen_height, self.background)
-
+      
+      # Sprites display
       self.beer_list.draw()
       self.vomit_list.draw()
-      self.all_sprite_list.draw()
+      self.securitas_list.draw()
       self.player.draw()
       self.map.wall_list.draw()
 
+      # Current time calculation
       minutes=int(self.total_time)//60
       seconds=int(self.total_time)%60
   
+      # Score and current time display
       output_score=f"Score: {int(self.score)}"
       output_time=f"Time: {minutes:02d}:{seconds:02d}"
       arcade.draw_text(output_score,10,20,arcade.color.RED,14)
       arcade.draw_text(output_time,10,50,arcade.color.RED,14)
 
   def update(self, delta_time):
+    # During the game
     if (self.game_over == False and self.menu==False and self.highscore==False):
+      
+      # Current time update
+      self.total_time+=delta_time
+
+      # Beers update
       self.beer_list.update()
 
+      # vomits update
       for vomit_sprites in self.vomit_list : 
         vomit_sprites.life-=delta_time
         if vomit_sprites.life<0:
           vomit_sprites.kill()
 
-      # Manual updates
-
+      # Player update
       self.player.update(delta_time)
+
+      # Securitas update
       for securitas in self.securitas_list:
         securitas.update(delta_time)
 
@@ -229,12 +242,7 @@ class Game(arcade.Window):
       for physics_engine in self.physic_engines_list:
         physics_engine.update()
 
-      self.total_time+=delta_time
-
-      securitas_hit_list = arcade.check_for_collision_with_list(self.player,self.securitas_list)
-      beer_hit_list = arcade.check_for_collision_with_list(self.player,self.beer_list)
-      vomit_hit_list = arcade.check_for_collision_with_list(self.player,self.vomit_list)
-      
+      # Handler of collision securitas sprites with statics sprite
       for securitas_sprite in self.securitas_list:
         secu_vomit_hit_list = arcade.check_for_collision_with_list(securitas_sprite,self.vomit_list)
         secu_beer_hit_list = arcade.check_for_collision_with_list(securitas_sprite,self.beer_list)
@@ -250,31 +258,36 @@ class Game(arcade.Window):
           securitas_sprite.BAC+=1
           new_beer_sprite=beer()
           self.beer_list.append(new_beer_sprite)
-      
-      # generate new beer if collision with player
-      if len(beer_hit_list) > 0: 
-        new_beer = beer()
-        self.beer_list.append(new_beer)
-      
-      # ???? More beers ?
-      if self.player.BAC>5 and len(self.beer_list) < 10:
-          beer_sprite=beer()
-          self.beer_list.append(beer_sprite)
 
+      # Handle beers collapsed by player
+      beer_hit_list = arcade.check_for_collision_with_list(self.player,self.beer_list)
       for beer_sprite_hit in beer_hit_list:
         print("BEER KILL")
         beer_sprite_hit.kill()
         self.player.BAC+=1
+      # Generate new beer if collision with player
+      if len(beer_hit_list) > 0: 
+        new_beer = beer()
+        self.beer_list.append(new_beer)
+        # ???? More beers ?
+        if self.player.BAC>5 and len(self.beer_list) < 10:
+            beer_sprite=beer()
+            self.beer_list.append(beer_sprite)
         
-     
+
+      # Handle player if he walks on a vomit
+      vomit_hit_list = arcade.check_for_collision_with_list(self.player,self.vomit_list) 
       if len(vomit_hit_list)>0:
         self.player.can_move=False
         self.player.static_time=TIME_STATIC
 
+      # Result of a collision between a player and a securitas
+      # # GameOver menu opened
+      # # highscore handler       
+      securitas_hit_list = arcade.check_for_collision_with_list(self.player,self.securitas_list)
       if len(securitas_hit_list)>0 :
         self.game_over=True   
         self.score=self.score*self.total_time
-
         highscore=take_scores()
         if len(highscore)<10:
           while self.username in highscore:
@@ -289,6 +302,7 @@ class Game(arcade.Window):
             highscore[self.username]=int(self.score)
             save_score(highscore)
 
+  # Result of all key pressed possibility
   def on_key_press(self, key, modifiers):
     if(self.game_over==False, self.menu==False, self.highscore==False):
       if(self.player.can_move):
@@ -302,7 +316,7 @@ class Game(arcade.Window):
           self.player.change_x = MOVEMENT_SPEED
 
 
-
+  # Result of all key released possibility
   def on_key_release(self, key, modifiers):
     if(self.game_over==False, self.menu==False, self.highscore==False):
       if key == arcade.key.UP or key == arcade.key.DOWN:
@@ -316,8 +330,10 @@ class Game(arcade.Window):
           self.vomit_list.append(vomit_sprite)
 
           
-          
+  # mouse handler        
   def on_mouse_press(self,x,y,button,modifiers):
+    
+    # During GameOver display 
     if self.game_over :
       if x < self.restart_position_x + self.restart_width and x > self.restart_position_x - self.restart_width and y < self.restart_position_y + self.restart_height and y > self.restart_position_y - self.restart_height :
         self.setup()
@@ -328,6 +344,8 @@ class Game(arcade.Window):
       elif x < self.backhighscore_position_x + self.backhighscore_width and x > self.backhighscore_position_x - self.backhighscore_width and y < self.backhighscore_position_y + self.backhighscore_height and y > self.backhighscore_position_y - self.backhighscore_height :
          self.game_over=False
          self.highscore=True
+    
+    # During menu display 
     elif self.menu:
       if x < self.play_position_x + self.play_width and x > self.play_position_x - self.play_width and y < self.play_position_y + self.play_height and y > self.play_position_y - self.play_height :
         self.setup()
@@ -337,6 +355,8 @@ class Game(arcade.Window):
         self.highscore=True
       elif  x < self.quit_position_x + self.quit_width and x > self.quit_position_x - self.quit_width and y < self.quit_position_y + self.quit_height and y > self.quit_position_y - self.quit_height :
         arcade.quick_run(0.5)
+    
+    # During highscore display 
     elif self.highscore :
       if x < self.backmenu_position_x + self.backmenu_width and x > self.backmenu_position_x - self.backmenu_width and y < self.backmenu_position_y + self.backmenu_height and y > self.backmenu_position_y - self.backmenu_height :
         self.highscore=False
