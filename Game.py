@@ -330,7 +330,7 @@ class Game(arcade.Window):
           self.vomit_list.append(vomit_sprite)
 
           
-  # mouse handler        
+  # Mouse handler        
   def on_mouse_press(self,x,y,button,modifiers):
     
     # During GameOver display 
