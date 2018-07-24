@@ -254,11 +254,16 @@ class Game(arcade.Window):
           securitas_sprite.can_move=False
           securitas_sprite.change_x=0
           securitas_sprite.change_y=0
+          securitas_sprite.BAC = 0
         for vomit_sprites in secu_vomit_hit_list:
           vomit_sprites.kill()
         for beer_sprites in secu_beer_hit_list:
           beer_sprites.kill()
           securitas_sprite.BAC+=1
+
+      # Handle securitas angry 
+      for securitas in self.securitas_list:
+        securitas.isAngry = True if securitas.BAC >= ANGRY_SECURITAS_BAC else False
       
       # generate current_beer_number 
       if self.total_time//BEER_GENERATION_COEFF<1:
@@ -282,15 +287,23 @@ class Game(arcade.Window):
       for beer_sprite_hit in beer_hit_list:
         beer_sprite_hit.kill()
         self.player.BAC+=1
-      # Generate new beer if collision with player
-      if len(beer_hit_list) > 0: 
-        new_beer = beer()
-        self.beer_list.append(new_beer)
-        # ???? More beers ?
-        if self.player.BAC>5 and len(self.beer_list) < 10:
-            beer_sprite=beer()
-            self.beer_list.append(beer_sprite)
-        
+ 
+      # generate current_beer_number 
+      if self.total_time//BEER_GENERATION_COEFF<1:
+        if self.total_time > 30 and self.total_time < 60:
+          self.current_beer_number = 2
+        else:
+          self.current_beer_number = 1 
+      else :
+         self.current_beer_number = self.total_time//BEER_GENERATION_COEFF
+
+      # Beer boost 
+      self.current_beer_number += (self.player.BAC//BEER_BOOST_COEFF if self.player.BAC//BEER_BOOST_COEFF <= MAX_BAC_BOOST else SECOND_STEP_MAX_BAC_BOOST if self.total_time > TOTAL_TIME_SECOND_STEP else MAX_BAC_BOOST)
+
+      # Beer generation
+      if len(self.beer_list) < self.current_beer_number and random.randint(0, BEER_DELAY) == 2:
+        newBeer = beer()
+        self.beer_list.append(newBeer) 
 
       # Handle player if he walks on a vomit
       vomit_hit_list = arcade.check_for_collision_with_list(self.player,self.vomit_list) 
