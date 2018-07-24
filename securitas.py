@@ -12,6 +12,7 @@ class securitas(arcade.Sprite):
 
 		# Securitas SETUP
 		self.can_move=True
+		self.isAngry = False
 		self.static_time=0
 		self.BAC=0
 		
@@ -33,13 +34,13 @@ class securitas(arcade.Sprite):
 			if(securitas_change==1):
 				securitas_new_direction=random.randrange(1,5,1)
 				if(securitas_new_direction==RIGHT):
-					self.change_x=SECURITAS_SPEED
+					self.change_x = (SECURITAS_SPEED if self.isAngry == False else ANGRY_SECURITAS_SPEED)
 				elif(securitas_new_direction==LEFT):
-					self.change_x=(-SECURITAS_SPEED)
+					self.change_x = (-SECURITAS_SPEED if self.isAngry == False else -ANGRY_SECURITAS_SPEED)
 				elif(securitas_new_direction==UP):
-					self.change_y=SECURITAS_SPEED	
+					self.change_y = (SECURITAS_SPEED	if self.isAngry == False else ANGRY_SECURITAS_SPEED)
 				else :
-					self.change_y=(-SECURITAS_SPEED)
+					self.change_y= (-SECURITAS_SPEED if self.isAngry == False else -ANGRY_SECURITAS_SPEED)
 
 		# The securitas walked into a vomit and he is blocked
 		if self.static_time<0:
