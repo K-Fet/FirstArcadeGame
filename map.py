@@ -1,9 +1,12 @@
 import arcade
 
 class Map:
-  def __init__(self, filename):
-    self.map_array = self.get_map(filename)
+  def __init__(self, filename_wall,filename_beer):
+    self.map_array_wall = self.get_map(filename_wall)
     self.wall_list = self.generateWallList()
+
+    self.map_array_beer = self.get_map(filename_wall)
+    self.beer_list = self.generateWallList()
 
   def get_map(self, filename):
     """
