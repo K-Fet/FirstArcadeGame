@@ -135,7 +135,7 @@ class Game(arcade.Window):
     self.score=0
     self.total_time=0
 
-    self.map = Map("maps/map1.csv")
+    self.map = Map("maps/map1_wall.csv")
 
     self.physic_engines_list = list()
 
@@ -244,6 +244,11 @@ class Game(arcade.Window):
       # PHYSIC ENGINE UPDATE
       for physics_engine in self.physic_engines_list:
         physics_engine.update()
+
+      # CHECK SECURITAS BLOCK IN WALLS AND CHANGE THEIR DIRECTION (MUST BE AFTER PHYSIC UPDATE AND SECURITAS UPDATE)
+      for securitas in self.securitas_list:
+        securitas.check_for_physic_engine_block()
+
 
       # Handler of collision securitas sprites with statics sprite
       for securitas_sprite in self.securitas_list:
