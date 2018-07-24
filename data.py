@@ -8,12 +8,28 @@ BORDERS_OFFSET = 15
 
 MOVEMENT_SPEED = 5
 SECURITAS_SPEED = 2
-TIME_STATIC=0.02 #time during the player can't move before have walked on vomit
+
+# Define the duration (sec) of the CAN'T_MOVE capability of the player/securitas.
+# This capability is set to True when the player/securitas hit a vomit.
+TIME_STATIC=3 
+
+# Define the duration (sec) of the invincible capability of the player.
+# This capability is set to True when the player vomit.
+# The player is can't hit a vomit when he is invincible 
+TIME_INVINCIBLE=1
 
 SPRITE_SCALING_BEER=0.100
 SPRITE_SCALING_SECURITAS=0.35
 SPRITE_SCALING_VOMIT=0.1
-BEER_CONVERGENCE=30
+
+#BEER GENERATION COEFF
+BEER_GENERATION_COEFF = 20
+BEER_BOOST_COEFF = 5
+BEER_DELAY = 35 # not in second, probability that a beer appear on a tick is 1/BEER_DELAY 
+MAX_BAC_BOOST = 0
+SECOND_STEP_MAX_BAC_BOOST = 3
+
+TOTAL_TIME_SECOND_STEP = 30
 
 RIGHT=1
 LEFT=2
