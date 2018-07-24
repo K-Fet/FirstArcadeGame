@@ -259,8 +259,6 @@ class Game(arcade.Window):
         for beer_sprites in secu_beer_hit_list:
           beer_sprites.kill()
           securitas_sprite.BAC+=1
-          new_beer_sprite=beer()
-          self.beer_list.append(new_beer_sprite)
       
       # generate current_beer_number 
       if self.total_time//BEER_GENERATION_COEFF<1:
