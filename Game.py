@@ -282,14 +282,7 @@ class Game(arcade.Window):
       for beer_sprite_hit in beer_hit_list:
         beer_sprite_hit.kill()
         self.player.BAC+=1
-      # Generate new beer if collision with player
-      if len(beer_hit_list) > 0: 
-        new_beer = beer()
-        self.beer_list.append(new_beer)
-        # ???? More beers ?
-        if self.player.BAC>5 and len(self.beer_list) < 10:
-            beer_sprite=beer()
-            self.beer_list.append(beer_sprite)
+ 
         
 
       # Handle player if he walks on a vomit
