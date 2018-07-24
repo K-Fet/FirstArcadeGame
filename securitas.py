@@ -59,4 +59,4 @@ class securitas(arcade.Sprite):
 	def check_for_physic_engine_block(self):
 		if self.prev_x == self.center_x and self.prev_y == self.center_y : 
 			self.change_x = -self.change_x
-			self.change_y = -self.change_x
+			self.change_y = -self.change_y
