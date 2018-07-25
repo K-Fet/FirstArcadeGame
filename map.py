@@ -25,7 +25,7 @@ class Map:
 
   def generateWallList(self, scalling=1):
     wall_list = arcade.SpriteList()
-    for row_index, row in enumerate(self.map_array):
+    for row_index, row in enumerate(self.map_array_wall):
       for column_index, item in enumerate(row):
 
         # For this map, the numbers represent:
