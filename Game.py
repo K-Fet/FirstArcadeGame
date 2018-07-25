@@ -109,7 +109,7 @@ class Game(arcade.Window):
   
   def setup(self):
     # Player setup
-    self.player = player(self.screen_width/2,self.screen_height/2)
+    self.player = player("img/player.png",self.screen_width/2,self.screen_height/2)
     self.player.can_move=True
     self.player.BAC=0 # alcoholism
 
@@ -135,7 +135,7 @@ class Game(arcade.Window):
     self.score=0
     self.total_time=0
 
-    self.map = Map("maps/map1.csv")
+    self.map = Map("maps/map1_wall.csv")
 
     self.physic_engines_list = list()
 
@@ -236,6 +236,13 @@ class Game(arcade.Window):
 
       # Player update
       self.player.update(delta_time)
+
+      # Change picture if drunk
+      if self.player.BAC > DRUNK_LEVEL_PLAYER:
+        newPlayer = player("img/player_drunk.png",self.player.center_x,self.player.center_y,True)
+        # self.player.kill()
+        self.player = newPlayer
+        self.physic_engines_list.append(arcade.PhysicsEngineSimple(self.player,self.map.wall_list))
 
       # Securitas update
       for securitas in self.securitas_list:
@@ -356,13 +363,17 @@ class Game(arcade.Window):
       if key == arcade.key.LEFT or key == arcade.key.RIGHT:
         self.player.change_x = 0
       if key == arcade.key.TAB and self.player.BAC>0:
+          vomit_sprite=vomit(self.player.center_x,self.player.center_y)
           self.score+=self.player.BAC
           self.player.BAC=0
           self.player.invincible = True
           self.player.invincible_time=TIME_INVINCIBLE
-          vomit_sprite=vomit(self.player.center_x,self.player.center_y)
           self.vomit_list.append(vomit_sprite)
-
+          if self.player.isDrunk:
+            newPlayer = player("img/player.png",self.player.center_x,self.player.center_y)
+            # self.player.kill()
+            self.player = newPlayer
+            self.physic_engines_list.append(arcade.PhysicsEngineSimple(self.player,self.map.wall_list))
           
   # mouse handler        
   def on_mouse_press(self,x,y,button,modifiers):
