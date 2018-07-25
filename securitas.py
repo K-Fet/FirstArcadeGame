@@ -12,8 +12,11 @@ class securitas(arcade.Sprite):
 
 		# Securitas SETUP
 		self.can_move=True
+		self.isAngry = False
 		self.static_time=0
 		self.BAC=0
+		self.prev_x = None
+		self.prev_y = None
 		
 		# First movement SETUP
 		securitas_initial_direction=random.randrange(1,5,1)
@@ -27,22 +30,33 @@ class securitas(arcade.Sprite):
 			self.change_y=(-SECURITAS_SPEED)
 
 	def update(self,delta_time):
+		# update prev x y and y
+		self.prev_x = self.center_x
+		self.prev_y = self.center_y
+
 		# The securitas can move
 		if self.can_move==True:
 			securitas_change=random.randrange(1,30,1)
 			if(securitas_change==1):
 				securitas_new_direction=random.randrange(1,5,1)
 				if(securitas_new_direction==RIGHT):
-					self.change_x=SECURITAS_SPEED
+					self.change_x = (SECURITAS_SPEED if self.isAngry == False else ANGRY_SECURITAS_SPEED)
 				elif(securitas_new_direction==LEFT):
-					self.change_x=(-SECURITAS_SPEED)
+					self.change_x = (-SECURITAS_SPEED if self.isAngry == False else -ANGRY_SECURITAS_SPEED)
 				elif(securitas_new_direction==UP):
-					self.change_y=SECURITAS_SPEED	
+					self.change_y = (SECURITAS_SPEED	if self.isAngry == False else ANGRY_SECURITAS_SPEED)
 				else :
-					self.change_y=(-SECURITAS_SPEED)
+					self.change_y= (-SECURITAS_SPEED if self.isAngry == False else -ANGRY_SECURITAS_SPEED)
+ 
+		
 
 		# The securitas walked into a vomit and he is blocked
 		if self.static_time<0:
 			self.can_move=True
 		else:
 			self.static_time-=delta_time
+
+	def check_for_physic_engine_block(self):
+		if self.prev_x == self.center_x and self.prev_y == self.center_y : 
+			self.change_x = -self.change_x
+			self.change_y = -self.change_y
