@@ -54,6 +54,7 @@ class Game(arcade.Window):
 
     # Windows 
     self.game_over = False
+    self.game_over_isHighscore=False
     self.menu = True
     self.highscore = False
 
@@ -154,9 +155,6 @@ class Game(arcade.Window):
        
       score=self.score*self.total_time
 
-      output = f"Game Over - Score : {int(self.score)}"
-      arcade.draw_text(output, self.game_over_position_x, self.game_over_position_y, arcade.color.WHITE, self.game_over_height, align="center",anchor_x="center",anchor_y="center")
-
       output = "Click to restart"
       arcade.draw_text(output, self.restart_position_x, self.restart_position_y, arcade.color.WHITE, self.restart_height, align="center",anchor_x="center",anchor_y="center")
 
@@ -165,6 +163,16 @@ class Game(arcade.Window):
 
       output = "high score"
       arcade.draw_text(output,self.backhighscore_position_x, self.backhighscore_position_y, arcade.color.WHITE, self.backhighscore_height,align="center",anchor_x="center",anchor_y="center")
+      # Game over with highscore display
+      if self.game_over_isHighscore :
+        output=f"Highscore ! - Score : {int(self.score)}"
+        arcade.draw_text(output, self.game_over_position_x, self.game_over_position_y, arcade.color.WHITE, self.game_over_height, align="center",anchor_x="center",anchor_y="center")
+      
+      # Game over witout highscore display
+      else :
+        output = f"Game Over - Score : {int(self.score)}"
+        arcade.draw_text(output, self.game_over_position_x, self.game_over_position_y, arcade.color.WHITE, self.game_over_height, align="center",anchor_x="center",anchor_y="center")
+
 
     # Menu display
     elif (self.menu):
@@ -327,12 +335,14 @@ class Game(arcade.Window):
         self.score=self.score*self.total_time
         highscore=take_scores()
         if len(highscore)<10:
+          self.game_over_isHighscore=True
           while self.username in highscore:
             self.username+="@"
           highscore[self.username]=int(self.score)
           save_score(highscore)
         else:
           if self.score>highscore[min(highscore,key=highscore.get)]:
+            self.game_over_isHighscore=True
             del highscore[min(highscore,key=highscore.get)]
             while self.player.username in highscore:
               self.player.username+="@"
@@ -369,7 +379,7 @@ class Game(arcade.Window):
           self.vomit_list.append(vomit_sprite)
 
           
-  # mouse handler        
+  # Mouse handler        
   def on_mouse_press(self,x,y,button,modifiers):
     
     # During GameOver display 
