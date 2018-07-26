@@ -137,8 +137,7 @@ class Game(arcade.Window):
     self.total_time=0
 
     self.map = Map("maps/map1.csv")
-    for maps in self.map :
-      print(maps)
+
     self.physic_engines_list = list()
 
     self.physic_engines_list.append(arcade.PhysicsEngineSimple(self.player,self.map.wall_list))
