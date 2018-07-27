@@ -110,8 +110,6 @@ class Game(arcade.Window):
   def setup(self):
     # Player setup
     self.player = player("img/player.png",self.screen_width/2,self.screen_height/2)
-    self.player.can_move=True
-    self.player.BAC=0 # alcoholism
 
     # Sprite lists SETUP
     self.beer_list=arcade.SpriteList()
@@ -366,14 +364,14 @@ class Game(arcade.Window):
           vomit_sprite=vomit(self.player.center_x,self.player.center_y)
           self.score+=self.player.BAC
           self.player.BAC=0
-          self.player.invincible = True
-          self.player.invincible_time=TIME_INVINCIBLE
           self.vomit_list.append(vomit_sprite)
           if self.player.isDrunk:
             newPlayer = player("img/player.png",self.player.center_x,self.player.center_y)
             # self.player.kill()
             self.player = newPlayer
             self.physic_engines_list.append(arcade.PhysicsEngineSimple(self.player,self.map.wall_list))
+          self.player.invincible = True
+          self.player.invincible_time=TIME_INVINCIBLE
           
   # mouse handler        
   def on_mouse_press(self,x,y,button,modifiers):

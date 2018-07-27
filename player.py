@@ -7,9 +7,10 @@ class player(arcade.Sprite):
 		self.center_x=center_x
 		self.center_y=center_y
 		self.BAC=0
-		self.can_move=None
-		self.static_time=None
-		self.invincible=None
+		self.isDrunk = isDrunk
+		self.can_move= True
+		self.static_time=0
+		self.invincible= False
 		self.invincible_time=None
 		self.username="Bd"
 
