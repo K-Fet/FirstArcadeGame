@@ -9,10 +9,11 @@ BORDERS_OFFSET = 15
 #MOVEMENT SPEED
 MOVEMENT_SPEED = 5
 SECURITAS_SPEED = 2
-ANGRY_SECURITAS_SPEED = 4
+ANGRY_SECURITAS_SPEED = 3
 
 # Angry securitas BAC
-ANGRY_SECURITAS_BAC = 5
+ANGRY_SECURITAS_BAC = 3
+SECURITAS_RADIUS = 400
 
 # Define the duration (sec) of the CAN'T_MOVE capability of the player/securitas.
 # This capability is set to True when the player/securitas hit a vomit.

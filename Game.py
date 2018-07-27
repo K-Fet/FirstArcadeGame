@@ -257,6 +257,8 @@ class Game(arcade.Window):
       # Securitas update
       for securitas in self.securitas_list:
         securitas.update(delta_time)
+        securitas.check_if_player_around(self.player)
+        securitas.check_if_charge_player(self.player)
 
       # PHYSIC ENGINE UPDATE
       for physics_engine in self.physic_engines_list:
@@ -265,6 +267,7 @@ class Game(arcade.Window):
       # CHECK SECURITAS BLOCK IN WALLS AND CHANGE THEIR DIRECTION (MUST BE AFTER PHYSIC UPDATE AND SECURITAS UPDATE)
       for securitas in self.securitas_list:
         securitas.check_for_physic_engine_block()
+        
 
 
       # Handler of collision securitas sprites with statics sprite
@@ -285,6 +288,7 @@ class Game(arcade.Window):
 
 
       # Handle securitas angry 
+      # CHECK SECURITAS BLOCK IN WALLS AND CHANGE THEIR DIRECTION (MUST BE AFTER PHYSIC UPDATE AND SECURITAS UPDATE)
       for securitas in self.securitas_list:
         securitas.isAngry = True if securitas.BAC >= ANGRY_SECURITAS_BAC else False
       
