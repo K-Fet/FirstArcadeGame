@@ -6,7 +6,7 @@ class player(arcade.Sprite):
 		super().__init__(filename,SPRITE_SCALING_PLAYER)
 		self.center_x=center_x
 		self.center_y=center_y
-		self.BAC=0
+		self.BAC = 0 if isDrunk == False  else 5
 		self.isDrunk = isDrunk
 		self.can_move= True
 		self.static_time=0
