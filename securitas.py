@@ -70,6 +70,12 @@ class securitas(arcade.Sprite):
 		if self.isAngry and self.player_around:
 			dist_x = self.center_x - player.center_x
 			dist_y = self.center_y - player.center_y
-			self.change_x = ANGRY_SECURITAS_SPEED if dist_x < 0 else -ANGRY_SECURITAS_SPEED
-			self.change_y = ANGRY_SECURITAS_SPEED if dist_y < 0 else -ANGRY_SECURITAS_SPEED
+			if abs(dist_x) <= ANGRY_SECURITAS_SPEED:
+				self.center_x = player.center_x
+			else:
+				self.change_x = ANGRY_SECURITAS_SPEED	 if dist_x < 0 else -ANGRY_SECURITAS_SPEED
+			if abs(dist_y) <= ANGRY_SECURITAS_SPEED:
+				self.center_y = player.center_y
+			else:
+				self.change_y = ANGRY_SECURITAS_SPEED if dist_y < 0 else -ANGRY_SECURITAS_SPEED
 
