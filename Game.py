@@ -238,6 +238,9 @@ class Game(arcade.Window):
       # Change picture if drunk
       if self.player.BAC > DRUNK_LEVEL_PLAYER:
         newPlayer = player("img/player_drunk.png",self.player.center_x,self.player.center_y,True)
+        newPlayer.change_x = self.player.change_x
+        newPlayer.change_y = self.player.change_y
+
         # self.player.kill()
         self.player = newPlayer
         self.physic_engines_list.append(arcade.PhysicsEngineSimple(self.player,self.map.wall_list))
@@ -367,6 +370,8 @@ class Game(arcade.Window):
           self.vomit_list.append(vomit_sprite)
           if self.player.isDrunk:
             newPlayer = player("img/player.png",self.player.center_x,self.player.center_y)
+            newPlayer.change_x = self.player.change_x
+            newPlayer.change_y = self.player.change_y
             # self.player.kill()
             self.player = newPlayer
             self.physic_engines_list.append(arcade.PhysicsEngineSimple(self.player,self.map.wall_list))
