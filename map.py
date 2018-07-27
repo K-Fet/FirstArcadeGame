@@ -1,8 +1,8 @@
 import arcade
 
 class Map:
-  def __init__(self, filename):
-    self.map_array = self.get_map(filename)
+  def __init__(self, filename_wall):
+    self.map_array_wall = self.get_map(filename_wall)
     self.wall_list = self.generateWallList()
 
   def get_map(self, filename):
@@ -22,7 +22,7 @@ class Map:
 
   def generateWallList(self, scalling=1):
     wall_list = arcade.SpriteList()
-    for row_index, row in enumerate(self.map_array):
+    for row_index, row in enumerate(self.map_array_wall):
       for column_index, item in enumerate(row):
 
         # For this map, the numbers represent:

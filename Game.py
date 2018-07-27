@@ -118,7 +118,7 @@ class Game(arcade.Window):
     self.beer_list=arcade.SpriteList()
     self.vomit_list=arcade.SpriteList()
 
-    beer_sprite=beer(self.screen_width//2, self.screen_height//2)
+    beer_sprite=beer(self.screen_width, self.screen_height, self.screen_width//2, self.screen_height//2)
     self.current_beer_number = 1
     self.beer_list.append(beer_sprite)
 
@@ -215,6 +215,7 @@ class Game(arcade.Window):
       self.securitas_list.draw()
       self.player.draw()
       self.map.wall_list.draw()
+      
 
       # Current time calculation
       minutes=int(self.total_time)//60
@@ -274,6 +275,7 @@ class Game(arcade.Window):
           beer_sprites.kill()
           securitas_sprite.BAC+=1
 
+
       # Handle securitas angry 
       for securitas in self.securitas_list:
         securitas.isAngry = True if securitas.BAC >= ANGRY_SECURITAS_BAC else False
@@ -292,7 +294,7 @@ class Game(arcade.Window):
 
       # Beer generation
       if len(self.beer_list) < self.current_beer_number and random.randint(0, BEER_DELAY) == 2:
-        newBeer = beer()
+        newBeer = beer(self.screen_width, self.screen_height)
         self.beer_list.append(newBeer) 
 
       # Handle beers collapsed by player
@@ -315,7 +317,7 @@ class Game(arcade.Window):
 
       # Beer generation
       if len(self.beer_list) < self.current_beer_number and random.randint(0, BEER_DELAY) == 2:
-        newBeer = beer()
+        newBeer = beer(self.screen_width, self.screen_height)
         self.beer_list.append(newBeer) 
 
       # Handle player if he walks on a vomit
