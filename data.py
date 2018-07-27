@@ -36,6 +36,9 @@ SECOND_STEP_MAX_BAC_BOOST = 3
 
 TOTAL_TIME_SECOND_STEP = 30
 
+# Number of beer to set the player drunk
+DRUNK_LEVEL_PLAYER = 5
+
 RIGHT=1
 LEFT=2
 UP=3

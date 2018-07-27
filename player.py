@@ -2,14 +2,15 @@ import arcade
 from data import *
 
 class player(arcade.Sprite):
-	def __init__(self,center_x,center_y):
-		super().__init__("img/player.png",SPRITE_SCALING_PLAYER)
+	def __init__(self,filename,center_x,center_y,isDrunk=False):
+		super().__init__(filename,SPRITE_SCALING_PLAYER)
 		self.center_x=center_x
 		self.center_y=center_y
-		self.BAC= None
-		self.can_move=None
-		self.static_time=None
-		self.invincible=None
+		self.BAC=0
+		self.isDrunk = isDrunk
+		self.can_move= True
+		self.static_time=0
+		self.invincible= False
 		self.invincible_time=None
 		self.username="Bd"
 
@@ -28,4 +29,3 @@ class player(arcade.Sprite):
 				self.invincible=False
 			else :
 				self.invincible_time -= delta_time
-		

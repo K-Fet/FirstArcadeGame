@@ -110,9 +110,7 @@ class Game(arcade.Window):
   
   def setup(self):
     # Player setup
-    self.player = player(self.screen_width/2,self.screen_height/2)
-    self.player.can_move=True
-    self.player.BAC=0 # alcoholism
+    self.player = player("img/player.png",self.screen_width/2,self.screen_height/2)
 
     # Sprite lists SETUP
     self.beer_list=arcade.SpriteList()
@@ -246,6 +244,16 @@ class Game(arcade.Window):
       # Player update
       self.player.update(delta_time)
 
+      # Change picture if drunk
+      if self.player.BAC > DRUNK_LEVEL_PLAYER:
+        newPlayer = player("img/player_drunk.png",self.player.center_x,self.player.center_y,True)
+        newPlayer.change_x = self.player.change_x
+        newPlayer.change_y = self.player.change_y
+
+        # self.player.kill()
+        self.player = newPlayer
+        self.physic_engines_list.append(arcade.PhysicsEngineSimple(self.player,self.map.wall_list))
+
       # Securitas update
       for securitas in self.securitas_list:
         securitas.update(delta_time)
@@ -373,13 +381,19 @@ class Game(arcade.Window):
       if key == arcade.key.LEFT or key == arcade.key.RIGHT:
         self.player.change_x = 0
       if key == arcade.key.TAB and self.player.BAC>0:
+          vomit_sprite=vomit(self.player.center_x,self.player.center_y)
           self.score+=self.player.BAC
           self.player.BAC=0
+          self.vomit_list.append(vomit_sprite)
+          if self.player.isDrunk:
+            newPlayer = player("img/player.png",self.player.center_x,self.player.center_y)
+            newPlayer.change_x = self.player.change_x
+            newPlayer.change_y = self.player.change_y
+            # self.player.kill()
+            self.player = newPlayer
+            self.physic_engines_list.append(arcade.PhysicsEngineSimple(self.player,self.map.wall_list))
           self.player.invincible = True
           self.player.invincible_time=TIME_INVINCIBLE
-          vomit_sprite=vomit(self.player.center_x,self.player.center_y)
-          self.vomit_list.append(vomit_sprite)
-
           
   # Mouse handler        
   def on_mouse_press(self,x,y,button,modifiers):
