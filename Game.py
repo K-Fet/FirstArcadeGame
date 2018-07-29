@@ -182,17 +182,8 @@ class Game(arcade.Window):
       arcade.draw_texture_rectangle(self.screen_width // 2, self.screen_height // 2,
                                       self.screen_width, self.screen_height, self.background)
 
-      # Draw menu
+      # Draw menu with specific values
       self.mainMenu.draw(self.mainMenu.generateValue())
-
-      # output = "Play"
-      # arcade.draw_text(output, self.play_position_x, self.play_position_y, arcade.color.WHITE, self.play_height,align="center",anchor_x="center",anchor_y="center")
-
-      # output = "High Score"
-      # arcade.draw_text(output, self.menu_highscore_position_x, self.menu_highscore_position_y, arcade.color.WHITE, self.menu_highscore_height,align="center",anchor_x="center",anchor_y="center")
-
-      # output = "Quit"
-      # arcade.draw_text(output, self.quit_position_x, self.quit_position_y, arcade.color.WHITE, self.quit_height,align="center",anchor_x="center",anchor_y="center")
 
     # Highscore display
     elif (self.highscore):
@@ -436,14 +427,16 @@ class Game(arcade.Window):
     
     # During menu display 
     elif self.menu:
-      if x < self.play_position_x + self.play_width and x > self.play_position_x - self.play_width and y < self.play_position_y + self.play_height and y > self.play_position_y - self.play_height :
-        self.setup()
-        self.menu=False
-      elif  x < self.menu_highscore_position_x + self.menu_highscore_width and x > self.menu_highscore_position_x - self.menu_highscore_width and y < self.menu_highscore_position_y + self.menu_highscore_height and y > self.menu_highscore_position_y - self.menu_highscore_height :
-        self.menu=False
-        self.highscore=True
-      elif  x < self.quit_position_x + self.quit_width and x > self.quit_position_x - self.quit_width and y < self.quit_position_y + self.quit_height and y > self.quit_position_y - self.quit_height :
-        arcade.quick_run(0.5)
+      for item in self.mainMenu.items:
+        if item.handleClick(x,y):
+          if item.text == "Jouer":
+            self.setup()
+            self.menu=False
+          elif item.text == "Highscores":
+            self.menu=False
+            self.highscore=True
+          elif item.text == "Quitter":
+            arcade.quick_run(0.5)
     
     # During highscore display 
     elif self.highscore :
