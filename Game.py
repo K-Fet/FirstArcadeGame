@@ -134,7 +134,7 @@ class Game(arcade.Window):
     self.score=0
     self.total_time=0
 
-    self.map = Map("maps/map1_wall.csv")
+    self.map = Map("maps/map1_wall.csv", self.screen_width, self.screen_height)
 
     self.physic_engines_list = list()
 
