@@ -391,11 +391,12 @@ class Game(arcade.Window):
             newPlayer = player("img/player.png",self.player.center_x,self.player.center_y)
             newPlayer.change_x = self.player.change_x
             newPlayer.change_y = self.player.change_y
+            # self.player.kill()
             self.kill_properly(self.player, newPlayer)
             self.player = newPlayer
           else:
             self.player.BAC=0
-            # self.player.kill()
+
             
           self.player.invincible = True
           self.player.invincible_time=TIME_INVINCIBLE

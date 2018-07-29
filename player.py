@@ -7,7 +7,6 @@ class player(arcade.Sprite):
 		self.center_x=center_x
 		self.center_y=center_y
 		self.BAC = 0 if isDrunk == False  else DRUNK_LEVEL_PLAYER
-		print("NEW PLAYER BAC  ", self.BAC)
 		self.isDrunk = isDrunk
 		self.can_move= True
 		self.static_time=0
