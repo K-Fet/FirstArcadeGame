@@ -245,14 +245,13 @@ class Game(arcade.Window):
       self.player.update(delta_time)
 
       # Change picture if drunk
-      if self.player.BAC > DRUNK_LEVEL_PLAYER:
+      if self.player.BAC >= DRUNK_LEVEL_PLAYER and self.player.isDrunk == False:
         newPlayer = player("img/player_drunk.png",self.player.center_x,self.player.center_y,True)
         newPlayer.change_x = self.player.change_x
         newPlayer.change_y = self.player.change_y
-
         # self.player.kill()
+        self.kill_properly(self.player, newPlayer)
         self.player = newPlayer
-        self.physic_engines_list.append(arcade.PhysicsEngineSimple(self.player,self.map.wall_list))
 
       # Securitas update
       for securitas in self.securitas_list:
@@ -387,15 +386,18 @@ class Game(arcade.Window):
       if key == arcade.key.TAB and self.player.BAC>0:
           vomit_sprite=vomit(self.player.center_x,self.player.center_y)
           self.score+=self.player.BAC
-          self.player.BAC=0
           self.vomit_list.append(vomit_sprite)
           if self.player.isDrunk:
             newPlayer = player("img/player.png",self.player.center_x,self.player.center_y)
             newPlayer.change_x = self.player.change_x
             newPlayer.change_y = self.player.change_y
             # self.player.kill()
+            self.kill_properly(self.player, newPlayer)
             self.player = newPlayer
-            self.physic_engines_list.append(arcade.PhysicsEngineSimple(self.player,self.map.wall_list))
+          else:
+            self.player.BAC=0
+
+            
           self.player.invincible = True
           self.player.invincible_time=TIME_INVINCIBLE
           
@@ -430,6 +432,13 @@ class Game(arcade.Window):
       if x < self.backmenu_position_x + self.backmenu_width and x > self.backmenu_position_x - self.backmenu_width and y < self.backmenu_position_y + self.backmenu_height and y > self.backmenu_position_y - self.backmenu_height :
         self.highscore=False
         self.menu=True
+    
+  def kill_properly(self, sprite, newSprite):
+    for physics_engine in self.physic_engines_list:
+      if (physics_engine.player_sprite == sprite):
+        self.physic_engines_list.remove(physics_engine)
+    sprite.kill()
+    self.physic_engines_list.append(arcade.PhysicsEngineSimple(newSprite, self.map.wall_list))
     
 
 def main():
