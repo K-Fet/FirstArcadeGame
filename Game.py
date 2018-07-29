@@ -58,26 +58,13 @@ class Game(arcade.Window):
     self.game_over = False
     self.game_over_isHighscore=False
     self.menu = True
-    self.highscore = False
+    self.highscores = False
 
-    # Statics graphics elements organisation 
-    self.line_break=screen_height/5
-
-    self.mainMenu = Menu(MAIN_MENU[0], generateValuesMainMenu, self.screen_width, self.screen_height)
-    # self.play_position_x=self.screen_width / 2
-    # self.play_position_y=(3/4)*self.screen_height
-    # self.play_height=self.screen_height/14
-    # self.play_width=int(4*0.4*self.play_height) #Nb_lettre*largeur_lettre
-
-    # self.menu_highscore_position_x=self.screen_width / 2
-    # self.menu_highscore_position_y=(3/4)*self.screen_height - self.play_height - self.line_break
-    # self.menu_highscore_height=self.screen_height/14
-    # self.menu_highscore_width=int(10*0.4*self.menu_highscore_height)
-
-    # self.quit_position_x=self.screen_width / 2
-    # self.quit_position_y=(3/4)*self.screen_height - self.play_height - self.menu_highscore_height - 2*self.line_break
-    # self.quit_height=self.screen_height/14
-    # self.quit_width=int(4*0.4*self.quit_height)
+    # Menu creation
+    self.main_menu = Menu(MAIN_MENU[0], MAIN_MENU[1], self.screen_width, self.screen_height)
+    self.high_scores_menu = Menu(HIGHSCORES_MENU[0], HIGHSCORES_MENU[1], self.screen_width, self.screen_height)
+    self.high_score_menu = Menu(HIGHSCORE_MENU[0], HIGHSCORE_MENU[1], self.screen_width, self.screen_height)
+    self.game_over_menu = Menu(GAME_OVER_MENU[0], GAME_OVER_MENU[1], self.screen_width, self.screen_height)
 
     self.game_over_position_x=self.screen_width / 2
     self.game_over_height=self.screen_height/10
@@ -97,11 +84,6 @@ class Game(arcade.Window):
     self.restart_position_y=(self.screen_height / 2) - self.game_over_height
     self.restart_height=self.screen_height/20
     self.restart_width=int(10*0.4*self.restart_height)
-
-    self.highscore_position_x=self.screen_width / 2
-    self.highscore_position_y=self.screen_height - self.line_break/4
-    self.highscore_height=54
-    self.highscore_width=int(10*0.4*self.highscore_height)
     
     # Background image will be stored in this variable
     self.background = None
@@ -152,56 +134,44 @@ class Game(arcade.Window):
 
     # GameOver display
     if self.game_over :
-       
+
       score=self.score*self.total_time
 
-      output = "Click to restart"
-      arcade.draw_text(output, self.restart_position_x, self.restart_position_y, arcade.color.WHITE, self.restart_height, align="center",anchor_x="center",anchor_y="center")
-
-      output = "menu"
-      arcade.draw_text(output,self.backmenu_position_x, self.backmenu_position_y, arcade.color.WHITE, self.backmenu_height,align="center",anchor_x="center",anchor_y="center")
-
-      output = "high score"
-      arcade.draw_text(output,self.backhighscore_position_x, self.backhighscore_position_y, arcade.color.WHITE, self.backhighscore_height,align="center",anchor_x="center",anchor_y="center")
       # Game over with highscore display
-      if self.game_over_isHighscore :
-        output=f"Highscore ! - Score : {int(self.score)}"
-        arcade.draw_text(output, self.game_over_position_x, self.game_over_position_y, arcade.color.WHITE, self.game_over_height, align="center",anchor_x="center",anchor_y="center")
-      
+      if self.game_over_isHighscore:
+        output_position = "0" # TODO Implement position
+        self.high_score_menu.addItem(POSITION_ITEM[0], POSITION_ITEM[1],POSITION_ITEM[2], output_position, POSITION_ITEM[4], POSITION_ITEM[5])
+        output_score = f"{int(self.score)}"
+        self.high_score_menu.addItem(SCORE_ITEM[0], SCORE_ITEM[1],SCORE_ITEM[2], output_score, SCORE_ITEM[4], SCORE_ITEM[5])
+        self.high_score_menu.draw()
+
       # Game over witout highscore display
       else :
-        output = f"Game Over - Score : {int(self.score)}"
-        arcade.draw_text(output, self.game_over_position_x, self.game_over_position_y, arcade.color.WHITE, self.game_over_height, align="center",anchor_x="center",anchor_y="center")
-
+        output_score = f"{int(self.score)}"
+        self.game_over_menu.addItem(SCORE_GAME_OVER_ITEM[0], SCORE_GAME_OVER_ITEM[1],SCORE_GAME_OVER_ITEM[2],
+          output_score, SCORE_GAME_OVER_ITEM[4], SCORE_GAME_OVER_ITEM[5])
+        self.game_over_menu.draw()
+      
 
     # Menu display
     elif (self.menu):
-      
-      # Background
-      self.background = arcade.load_texture("img/menu/main_menu.png")
-      arcade.draw_texture_rectangle(self.screen_width // 2, self.screen_height // 2,
-                                      self.screen_width, self.screen_height, self.background)
-
       # Draw menu with specific values
-      self.mainMenu.draw(self.mainMenu.generateValue())
+      self.main_menu.draw()
 
     # Highscore display
-    elif (self.highscore):
-      output = "High Score"
-      arcade.draw_text(output, self.highscore_position_x, self.highscore_position_y,arcade.color.WHITE, self.highscore_height,align="center",anchor_x="center",anchor_y="center")
+    elif (self.highscores):
+      # TODO: need to be improve because we parse highscore file in every draw() call ... Git blame JP :)
       list_highscore=take_scores()
       rank=1
-      
       sorted_highscore=sorted(list_highscore.items(),key=operator.itemgetter(1),reverse=True)
-
       for pair in sorted_highscore :
         keys=re.sub('@','',pair[0])
         output=str(rank)+ " : " + keys + "  "+ str(pair[1])# + keys 
-        arcade.draw_text(output, self.highscore_position_x, self.highscore_position_y - self.highscore_height*rank - self.line_break*(rank+2)/15,arcade.color.WHITE,align="center",anchor_x="center",anchor_y="center")
+        self.high_scores_menu.addItem(INITIAL_HIGHSCORES[0], INITIAL_HIGHSCORES[1] - rank * (INITIAL_HIGHSCORES[2] + 10) / self.screen_height, 
+          INITIAL_HIGHSCORES[2], output, INITIAL_HIGHSCORES[4], INITIAL_HIGHSCORES[5])
         rank+=1
 
-      output = "menu"
-      arcade.draw_text(output,self.backmenu_position_x, self.backmenu_position_y, arcade.color.WHITE, self.backmenu_height,align="center",anchor_x="center",anchor_y="center")
+      self.high_scores_menu.draw()
 
     # Game display
     else:
@@ -229,7 +199,7 @@ class Game(arcade.Window):
 
   def update(self, delta_time):
     # During the game
-    if (self.game_over == False and self.menu==False and self.highscore==False):
+    if (self.game_over == False and self.menu==False and self.highscores==False):
       
       # Current time update
       self.total_time+=delta_time
@@ -373,7 +343,7 @@ class Game(arcade.Window):
 
   # Result of all key pressed possibility
   def on_key_press(self, key, modifiers):
-    if(self.game_over==False, self.menu==False, self.highscore==False):
+    if(self.game_over==False, self.menu==False, self.highscores==False):
       if(self.player.can_move):
         if key == arcade.key.UP:
           self.player.change_y = MOVEMENT_SPEED
@@ -387,7 +357,7 @@ class Game(arcade.Window):
 
   # Result of all key released possibility
   def on_key_release(self, key, modifiers):
-    if(self.game_over==False, self.menu==False, self.highscore==False):
+    if(self.game_over==False, self.menu==False, self.highscores==False):
       if key == arcade.key.UP or key == arcade.key.DOWN:
         self.player.change_y = 0
       if key == arcade.key.LEFT or key == arcade.key.RIGHT:
@@ -415,34 +385,51 @@ class Game(arcade.Window):
     
     # During GameOver display 
     if self.game_over :
-      if x < self.restart_position_x + self.restart_width and x > self.restart_position_x - self.restart_width and y < self.restart_position_y + self.restart_height and y > self.restart_position_y - self.restart_height :
-        self.setup()
-        self.game_over=False
-      elif x < self.backmenu_position_x + self.backmenu_width and x > self.backmenu_position_x - self.backmenu_width and y < self.backmenu_position_y + self.backmenu_height and y > self.backmenu_position_y - self.backmenu_height :
-         self.game_over=False
-         self.menu=True
-      elif x < self.backhighscore_position_x + self.backhighscore_width and x > self.backhighscore_position_x - self.backhighscore_width and y < self.backhighscore_position_y + self.backhighscore_height and y > self.backhighscore_position_y - self.backhighscore_height :
-         self.game_over=False
-         self.highscore=True
+      if self.game_over_isHighscore:
+        for item in self.high_score_menu.items:
+          if item.clickable and item.handleClick(x,y):
+            if item.text == "Rejouer":
+              self.setup()
+              self.game_over = False
+            elif item.text == "Highscores":
+              self.game_over = False
+              self.highscores = True
+            elif item.text == "Menu":
+              self.game_over=False
+              self.menu=True
+      else:
+        for item in self.game_over_menu.items:
+          if item.clickable and item.handleClick(x,y):
+            if item.text == "Rejouer":
+              self.setup()
+              self.game_over = False
+            elif item.text == "Highscores":
+              self.game_over = False
+              self.highscores = True
+            elif item.text == "Menu":
+              self.game_over=False
+              self.menu=True
     
     # During menu display 
     elif self.menu:
-      for item in self.mainMenu.items:
+      for item in self.main_menu.items:
         if item.clickable and item.handleClick(x,y):
           if item.text == "Jouer":
             self.setup()
             self.menu=False
           elif item.text == "Highscores":
             self.menu=False
-            self.highscore=True
+            self.highscores=True
           elif item.text == "Quitter":
             arcade.quick_run(0.5)
     
-    # During highscore display 
-    elif self.highscore :
-      if x < self.backmenu_position_x + self.backmenu_width and x > self.backmenu_position_x - self.backmenu_width and y < self.backmenu_position_y + self.backmenu_height and y > self.backmenu_position_y - self.backmenu_height :
-        self.highscore=False
-        self.menu=True
+    # During highscore display
+    elif self.highscores:
+      for item in self.high_scores_menu.items:
+        if item.clickable and item.handleClick(x,y):
+          if item.text == "Menu":
+            self.highscores=False
+            self.menu=True
     
   def kill_properly(self, sprite, newSprite):
     for physics_engine in self.physic_engines_list:
