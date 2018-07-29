@@ -6,6 +6,8 @@ from beer import *
 from securitas import *
 from vomit import *
 from map import *
+from menu import *
+from menus_items import *
 import os
 import pickle
 import re
@@ -61,20 +63,21 @@ class Game(arcade.Window):
     # Statics graphics elements organisation 
     self.line_break=screen_height/5
 
-    self.play_position_x=self.screen_width / 2
-    self.play_position_y=(3/4)*self.screen_height
-    self.play_height=self.screen_height/14
-    self.play_width=int(4*0.4*self.play_height) #Nb_lettre*largeur_lettre
+    self.mainMenu = Menu(MAIN_MENU[0], generateValuesMainMenu, self.screen_width, self.screen_height)
+    # self.play_position_x=self.screen_width / 2
+    # self.play_position_y=(3/4)*self.screen_height
+    # self.play_height=self.screen_height/14
+    # self.play_width=int(4*0.4*self.play_height) #Nb_lettre*largeur_lettre
 
-    self.menu_highscore_position_x=self.screen_width / 2
-    self.menu_highscore_position_y=(3/4)*self.screen_height - self.play_height - self.line_break
-    self.menu_highscore_height=self.screen_height/14
-    self.menu_highscore_width=int(10*0.4*self.menu_highscore_height)
+    # self.menu_highscore_position_x=self.screen_width / 2
+    # self.menu_highscore_position_y=(3/4)*self.screen_height - self.play_height - self.line_break
+    # self.menu_highscore_height=self.screen_height/14
+    # self.menu_highscore_width=int(10*0.4*self.menu_highscore_height)
 
-    self.quit_position_x=self.screen_width / 2
-    self.quit_position_y=(3/4)*self.screen_height - self.play_height - self.menu_highscore_height - 2*self.line_break
-    self.quit_height=self.screen_height/14
-    self.quit_width=int(4*0.4*self.quit_height)
+    # self.quit_position_x=self.screen_width / 2
+    # self.quit_position_y=(3/4)*self.screen_height - self.play_height - self.menu_highscore_height - 2*self.line_break
+    # self.quit_height=self.screen_height/14
+    # self.quit_width=int(4*0.4*self.quit_height)
 
     self.game_over_position_x=self.screen_width / 2
     self.game_over_height=self.screen_height/10
@@ -173,14 +176,23 @@ class Game(arcade.Window):
 
     # Menu display
     elif (self.menu):
-      output = "Play"
-      arcade.draw_text(output, self.play_position_x, self.play_position_y, arcade.color.WHITE, self.play_height,align="center",anchor_x="center",anchor_y="center")
+      
+      # Background
+      self.background = arcade.load_texture("img/menu/main_menu.png")
+      arcade.draw_texture_rectangle(self.screen_width // 2, self.screen_height // 2,
+                                      self.screen_width, self.screen_height, self.background)
 
-      output = "High Score"
-      arcade.draw_text(output, self.menu_highscore_position_x, self.menu_highscore_position_y, arcade.color.WHITE, self.menu_highscore_height,align="center",anchor_x="center",anchor_y="center")
+      # Draw menu
+      self.mainMenu.draw(self.mainMenu.generateValue())
 
-      output = "Quit"
-      arcade.draw_text(output, self.quit_position_x, self.quit_position_y, arcade.color.WHITE, self.quit_height,align="center",anchor_x="center",anchor_y="center")
+      # output = "Play"
+      # arcade.draw_text(output, self.play_position_x, self.play_position_y, arcade.color.WHITE, self.play_height,align="center",anchor_x="center",anchor_y="center")
+
+      # output = "High Score"
+      # arcade.draw_text(output, self.menu_highscore_position_x, self.menu_highscore_position_y, arcade.color.WHITE, self.menu_highscore_height,align="center",anchor_x="center",anchor_y="center")
+
+      # output = "Quit"
+      # arcade.draw_text(output, self.quit_position_x, self.quit_position_y, arcade.color.WHITE, self.quit_height,align="center",anchor_x="center",anchor_y="center")
 
     # Highscore display
     elif (self.highscore):

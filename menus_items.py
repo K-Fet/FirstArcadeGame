@@ -6,14 +6,15 @@
 # To implement a new color, please refere to the static_item.getArcadeColor()
 
 # MAIN MENU
+MAIN_MENU_ITEM_PROPOTION = 1/20
 
-PLAY_ITEM = [1/2,11/16,"JOUER","white"]
-HIGHSCORE_ITEM = [1/2,11/16,"HIGH SCORES","white"]
-QUIT_ITEM = [1/2,11/16,"QUITTER","white"]
+PLAY_ITEM = [1/2,49/72,MAIN_MENU_ITEM_PROPOTION,"Jouer","white"]
+HIGHSCORE_ITEM = [1/2,31/72,MAIN_MENU_ITEM_PROPOTION,"Highscores","white"]
+QUIT_ITEM = [1/2,13/72,MAIN_MENU_ITEM_PROPOTION,"Quitter","white"]
 
 MAIN_MENU = [
   [PLAY_ITEM, HIGHSCORE_ITEM, QUIT_ITEM]
 ]
 
 def generateValuesMainMenu():
-  return ['']
+  return ['','','']
