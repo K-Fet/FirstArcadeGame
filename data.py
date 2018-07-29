@@ -12,6 +12,7 @@ SECURITAS_SPEED = 2
 ANGRY_SECURITAS_SPEED = 3
 
 # Angry securitas BAC
+ANGRY_SECURITAS_BAC = 3
 SECURITAS_RADIUS = 400
 
 # Define the duration (sec) of the CAN'T_MOVE capability of the player/securitas.
