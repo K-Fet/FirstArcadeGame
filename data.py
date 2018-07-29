@@ -12,7 +12,7 @@ SECURITAS_SPEED = 2
 ANGRY_SECURITAS_SPEED = 4
 
 # Angry securitas BAC
-ANGRY_SECURITAS_BAC = 5
+ANGRY_SECURITAS_BAC = 1
 
 # Define the duration (sec) of the CAN'T_MOVE capability of the player/securitas.
 # This capability is set to True when the player/securitas hit a vomit.
@@ -25,7 +25,7 @@ TIME_INVINCIBLE=1
 
 SPRITE_SCALING_BEER=0.100
 SPRITE_SCALING_SECURITAS=0.35
-SPRITE_SCALING_VOMIT=0.1
+SPRITE_SCALING_VOMIT=0.2
 
 #BEER GENERATION COEFF
 BEER_GENERATION_COEFF = 20

@@ -3,8 +3,8 @@ from data import *
 import random
 
 class securitas(arcade.Sprite):
-	def __init__(self,center_x,center_y):
-		super().__init__("img/securitas.png",SPRITE_SCALING_SECURITAS)
+	def __init__(self,filename,center_x,center_y,isAngry=False):
+		super().__init__(filename,SPRITE_SCALING_SECURITAS)
 		
 		# Initial position
 		self.center_x=center_x
@@ -12,7 +12,7 @@ class securitas(arcade.Sprite):
 
 		# Securitas SETUP
 		self.can_move=True
-		self.isAngry = False
+		self.isAngry = isAngry
 		self.static_time=0
 		self.BAC=0
 		self.prev_x = None
