@@ -219,7 +219,7 @@ class Game(arcade.Window):
       seconds=int(self.total_time)%60
   
       # Score and current time display
-      output_score=f"Score: {int(self.score)}"
+      output_score=f"Score: {int(self.score*self.total_time)}"
       output_time=f"Time: {minutes:02d}:{seconds:02d}"
       arcade.draw_text(output_score,620,100,arcade.color.WHITE,18)
       arcade.draw_text(output_time,620,50,arcade.color.WHITE,18)
