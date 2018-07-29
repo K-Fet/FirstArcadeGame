@@ -133,7 +133,7 @@ class Game(arcade.Window):
     self.score=0
     self.total_time=0
 
-    self.map = Map("maps/map1_wall.csv")
+    self.map = Map("maps/map1_wall.csv", self.screen_width, self.screen_height)
 
     self.physic_engines_list = list()
 
@@ -244,14 +244,13 @@ class Game(arcade.Window):
       self.player.update(delta_time)
 
       # Change picture if drunk
-      if self.player.BAC > DRUNK_LEVEL_PLAYER:
+      if self.player.BAC >= DRUNK_LEVEL_PLAYER and self.player.isDrunk == False:
         newPlayer = player("img/player_drunk.png",self.player.center_x,self.player.center_y,True)
         newPlayer.change_x = self.player.change_x
         newPlayer.change_y = self.player.change_y
-
         # self.player.kill()
+        self.kill_properly(self.player, newPlayer)
         self.player = newPlayer
-        self.physic_engines_list.append(arcade.PhysicsEngineSimple(self.player,self.map.wall_list))
 
        # Handle securitas angry 
       newList = arcade.SpriteList()
@@ -272,17 +271,19 @@ class Game(arcade.Window):
       self.securitas_list = newList
 
       # Securitas update
-      for secu in self.securitas_list:
-        secu.update(delta_time)
+      for securitas in self.securitas_list:
+        securitas.update(delta_time)
+        securitas.check_if_player_around(self.player)
+        securitas.check_if_charge_player(self.player)
 
       # PHYSIC ENGINE UPDATE
       for physics_engine in self.physic_engines_list:
         physics_engine.update()
 
       # CHECK SECURITAS BLOCK IN WALLS AND CHANGE THEIR DIRECTION (MUST BE AFTER PHYSIC UPDATE AND SECURITAS UPDATE)
-      for secu in self.securitas_list:
-        secu.check_for_physic_engine_block()
-
+      for securitas in self.securitas_list:
+        securitas.check_for_physic_engine_block()
+        
 
       # Handler of collision securitas sprites with statics sprite
       for securitas_sprite in self.securitas_list:
@@ -301,9 +302,10 @@ class Game(arcade.Window):
           securitas_sprite.BAC+=1
 
 
-      
-            
-            
+      # Handle securitas angry 
+      # CHECK SECURITAS BLOCK IN WALLS AND CHANGE THEIR DIRECTION (MUST BE AFTER PHYSIC UPDATE AND SECURITAS UPDATE)
+      for securitas in self.securitas_list:
+        securitas.isAngry = True if securitas.BAC >= ANGRY_SECURITAS_BAC else False
       
       # generate current_beer_number 
       if self.total_time//BEER_GENERATION_COEFF<1:
@@ -400,15 +402,18 @@ class Game(arcade.Window):
       if key == arcade.key.TAB and self.player.BAC>0:
           vomit_sprite=vomit(self.player.center_x,self.player.center_y)
           self.score+=self.player.BAC
-          self.player.BAC=0
           self.vomit_list.append(vomit_sprite)
           if self.player.isDrunk:
             newPlayer = player("img/player.png",self.player.center_x,self.player.center_y)
             newPlayer.change_x = self.player.change_x
             newPlayer.change_y = self.player.change_y
             # self.player.kill()
+            self.kill_properly(self.player, newPlayer)
             self.player = newPlayer
-            self.physic_engines_list.append(arcade.PhysicsEngineSimple(self.player,self.map.wall_list))
+          else:
+            self.player.BAC=0
+
+            
           self.player.invincible = True
           self.player.invincible_time=TIME_INVINCIBLE
           
@@ -443,6 +448,13 @@ class Game(arcade.Window):
       if x < self.backmenu_position_x + self.backmenu_width and x > self.backmenu_position_x - self.backmenu_width and y < self.backmenu_position_y + self.backmenu_height and y > self.backmenu_position_y - self.backmenu_height :
         self.highscore=False
         self.menu=True
+    
+  def kill_properly(self, sprite, newSprite):
+    for physics_engine in self.physic_engines_list:
+      if (physics_engine.player_sprite == sprite):
+        self.physic_engines_list.remove(physics_engine)
+    sprite.kill()
+    self.physic_engines_list.append(arcade.PhysicsEngineSimple(newSprite, self.map.wall_list))
     
 
 def main():

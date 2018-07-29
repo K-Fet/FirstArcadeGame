@@ -17,6 +17,7 @@ class securitas(arcade.Sprite):
 		self.BAC=0
 		self.prev_x = None
 		self.prev_y = None
+		self.player_around = False
 		
 		# First movement SETUP
 		securitas_initial_direction=random.randrange(1,5,1)
@@ -60,3 +61,21 @@ class securitas(arcade.Sprite):
 		if self.prev_x == self.center_x and self.prev_y == self.center_y : 
 			self.change_x = -self.change_x
 			self.change_y = -self.change_y
+		
+	def check_if_player_around(self, player):
+		dist = arcade.sprite.get_distance_between_sprites(self, player)
+		self.player_around = True if (dist <= SECURITAS_RADIUS) else False
+
+	def check_if_charge_player(self, player):
+		if self.isAngry and self.player_around:
+			dist_x = self.center_x - player.center_x
+			dist_y = self.center_y - player.center_y
+			if abs(dist_x) <= ANGRY_SECURITAS_SPEED:
+				self.center_x = player.center_x
+			else:
+				self.change_x = ANGRY_SECURITAS_SPEED	 if dist_x < 0 else -ANGRY_SECURITAS_SPEED
+			if abs(dist_y) <= ANGRY_SECURITAS_SPEED:
+				self.center_y = player.center_y
+			else:
+				self.change_y = ANGRY_SECURITAS_SPEED if dist_y < 0 else -ANGRY_SECURITAS_SPEED
+
