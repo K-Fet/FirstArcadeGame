@@ -7,7 +7,7 @@ class Menu:
     self.items = []
 
     for item in items:
-      self.items.append(StaticItem(item[0],item[1],item[2],item[3],item[4],screen_width,screen_heigth))
+      self.items.append(StaticItem(item[0],item[1],item[2],item[3],item[4],item[5],screen_width,screen_heigth))
 
   def draw(self, menuValue):
     for index, item in  enumerate(self.items):

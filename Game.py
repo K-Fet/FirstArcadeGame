@@ -428,7 +428,7 @@ class Game(arcade.Window):
     # During menu display 
     elif self.menu:
       for item in self.mainMenu.items:
-        if item.handleClick(x,y):
+        if item.clickable and item.handleClick(x,y):
           if item.text == "Jouer":
             self.setup()
             self.menu=False
