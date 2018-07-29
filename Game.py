@@ -120,10 +120,9 @@ class Game(arcade.Window):
     self.current_beer_number = 1
     self.beer_list.append(beer_sprite)
 
-    securitas_1 = securitas(self.screen_width // 2 + 250,self.screen_height // 2 - 100)
-    securitas_2 = securitas(self.screen_width // 2 - 250,self.screen_height // 2 + 250)
+    securitas_1 = Securitas("img/securitas.png",self.screen_width // 2 + 250,self.screen_height // 2 - 100,False)
+    securitas_2 = Securitas("img/securitas.png",self.screen_width // 2 - 250,self.screen_height // 2 + 250,False)
     self.securitas_list=arcade.SpriteList()
-
     self.securitas_list.append(securitas_1)
     self.securitas_list.append(securitas_2)
 
@@ -253,11 +252,23 @@ class Game(arcade.Window):
         self.kill_properly(self.player, newPlayer)
         self.player = newPlayer
 
-      # Securitas update
-      for securitas in self.securitas_list:
-        securitas.update(delta_time)
-        securitas.check_if_player_around(self.player)
-        securitas.check_if_charge_player(self.player)
+        
+      # Securitas update img
+      for secu in self.securitas_list:
+        if secu.BAC >= ANGRY_SECURITAS_BAC and secu.isAngry == False:
+          newSecuritas = Securitas("img/securitas_angry.png", secu.center_x, secu.center_y, True)
+          self.kill_properly(secu, newSecuritas)
+          self.securitas_list.append(newSecuritas)
+        elif secu.BAC < ANGRY_SECURITAS_BAC and secu.isAngry:
+          newSecuritas = Securitas("img/securitas.png", secu.center_x, secu.center_y)
+          self.kill_properly(secu, newSecuritas)
+          self.securitas_list.append(newSecuritas) 
+
+      # Securitas update   
+      for secu in self.securitas_list:
+        secu.update(delta_time)
+        secu.check_if_player_around(self.player)
+        secu.check_if_charge_player(self.player)
 
       # PHYSIC ENGINE UPDATE
       for physics_engine in self.physic_engines_list:
@@ -267,7 +278,6 @@ class Game(arcade.Window):
       for securitas in self.securitas_list:
         securitas.check_for_physic_engine_block()
         
-
 
       # Handler of collision securitas sprites with statics sprite
       for securitas_sprite in self.securitas_list:
@@ -286,10 +296,6 @@ class Game(arcade.Window):
           securitas_sprite.BAC+=1
 
 
-      # Handle securitas angry 
-      # CHECK SECURITAS BLOCK IN WALLS AND CHANGE THEIR DIRECTION (MUST BE AFTER PHYSIC UPDATE AND SECURITAS UPDATE)
-      for securitas in self.securitas_list:
-        securitas.isAngry = True if securitas.BAC >= ANGRY_SECURITAS_BAC else False
       
       # generate current_beer_number 
       if self.total_time//BEER_GENERATION_COEFF<1:

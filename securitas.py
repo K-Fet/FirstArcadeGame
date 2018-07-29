@@ -2,33 +2,34 @@ import arcade
 from data import *
 import random
 
-class securitas(arcade.Sprite):
-	def __init__(self,center_x,center_y):
-		super().__init__("img/securitas.png",SPRITE_SCALING_SECURITAS)
+class Securitas(arcade.Sprite):
+	def __init__(self,filename,center_x,center_y,isAngry=False):
+		super().__init__(filename,SPRITE_SCALING_SECURITAS)
 		
 		# Initial position
 		self.center_x=center_x
 		self.center_y=center_y
 
 		# Securitas SETUP
-		self.can_move=True
-		self.isAngry = False
-		self.static_time=0
-		self.BAC=0
+		self.can_move= True if isAngry else False
+		self.isAngry = isAngry
+		self.static_time = 0  if isAngry else TIME_STATIC
+		self.BAC = ANGRY_SECURITAS_BAC if isAngry else 0
 		self.prev_x = None
 		self.prev_y = None
 		self.player_around = False
 		
 		# First movement SETUP
-		securitas_initial_direction=random.randrange(1,5,1)
-		if(securitas_initial_direction==RIGHT):
-			self.change_x=SECURITAS_SPEED
-		elif(securitas_initial_direction==LEFT):
-			self.change_x=(-SECURITAS_SPEED)
-		elif(securitas_initial_direction==UP):
-			self.change_y=SECURITAS_SPEED	
-		else :
-			self.change_y=(-SECURITAS_SPEED)
+		if self.can_move==True:
+			securitas_initial_direction=random.randrange(1,5,1)
+			if(securitas_initial_direction==RIGHT):
+				self.change_x=SECURITAS_SPEED
+			elif(securitas_initial_direction==LEFT):
+				self.change_x=(-SECURITAS_SPEED)
+			elif(securitas_initial_direction==UP):
+				self.change_y=SECURITAS_SPEED	
+			else :
+				self.change_y=(-SECURITAS_SPEED)
 
 	def update(self,delta_time):
 		# update prev x y and y
@@ -54,6 +55,7 @@ class securitas(arcade.Sprite):
 		# The securitas walked into a vomit and he is blocked
 		if self.static_time<0:
 			self.can_move=True
+			self.static_time = 0
 		else:
 			self.static_time-=delta_time
 

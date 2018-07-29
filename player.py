@@ -20,7 +20,10 @@ class player(arcade.Sprite):
 		if self.can_move == False:
 			if self.static_time <= 0:
 				self.can_move=True
+				self.static_time = 0
 			else :
+				self.change_x = 0
+				self.change_y = 0
 				self.static_time -= delta_time
 
 		# Decrease the invincible_time attribute by delta time.
