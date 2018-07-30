@@ -18,7 +18,7 @@ class Menu:
       self.screen_width, self.screen_height, self.background)
 
     # Menu items
-    for index, item in  enumerate(self.items):
+    for item in self.items:
       item.draw()
   
   def addItem(self, x_proportion, y_proportion, fontSize, text, color, clickable):
