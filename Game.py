@@ -65,25 +65,6 @@ class Game(arcade.Window):
     self.high_scores_menu = Menu(HIGHSCORES_MENU[0], HIGHSCORES_MENU[1], self.screen_width, self.screen_height)
     self.high_score_menu = Menu(HIGHSCORE_MENU[0], HIGHSCORE_MENU[1], self.screen_width, self.screen_height)
     self.game_over_menu = Menu(GAME_OVER_MENU[0], GAME_OVER_MENU[1], self.screen_width, self.screen_height)
-
-    self.game_over_position_x=self.screen_width / 2
-    self.game_over_height=self.screen_height/10
-    self.game_over_position_y=(self.screen_height / 2) + self.game_over_height
-
-    self.backmenu_position_x=(self.screen_width)*(1/10)
-    self.backmenu_position_y=(self.screen_height)*(1/10)
-    self.backmenu_height=self.screen_height/20
-    self.backmenu_width=int(10*0.4*self.backmenu_height)
-
-    self.backhighscore_position_x=(self.screen_width)*(9/10)
-    self.backhighscore_position_y=(self.screen_height)*(1/10)
-    self.backhighscore_height=self.screen_height/20
-    self.backhighscore_width=int(10*0.4*self.backhighscore_height)
-
-    self.restart_position_x=self.screen_width / 2
-    self.restart_position_y=(self.screen_height / 2) - self.game_over_height
-    self.restart_height=self.screen_height/20
-    self.restart_width=int(10*0.4*self.restart_height)
     
     # Background image will be stored in this variable
     self.background = None
@@ -111,7 +92,7 @@ class Game(arcade.Window):
     self.securitas_list.append(securitas_1)
     self.securitas_list.append(securitas_2)
 
-    # Map loaded
+    # Background loaded
     self.background = arcade.load_texture("img/map1_1280.png")
 
     # Window SETUP
