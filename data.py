@@ -18,6 +18,7 @@ SECURITAS_RADIUS = 400
 # Define the duration (sec) of the CAN'T_MOVE capability of the player/securitas.
 # This capability is set to True when the player/securitas hit a vomit.
 TIME_STATIC=3 
+SUPER_TIME_STATIC=5
 
 # Define the duration (sec) of the invincible capability of the player.
 # This capability is set to True when the player vomit.
@@ -38,7 +39,13 @@ SECOND_STEP_MAX_BAC_BOOST = 3
 TOTAL_TIME_SECOND_STEP = 30
 
 # Number of beer to set the player drunk
-DRUNK_LEVEL_PLAYER = 5
+DRUNK_LEVEL_PLAYER = 3
+SUPER_DRUNK_LEVEL_PLAYER = 10
+
+# Percentage of the player speed for super vomit
+SUPER_VOMIT_PERCENT_SPEED = 0.7
+# Player score increased by player.BAC * multiplicator
+SUPER_DRUNK_SCORE_MULTIPLICATOR = 5
 
 RIGHT=1
 LEFT=2
