@@ -199,7 +199,6 @@ class Game(arcade.Window):
           vomit_sprites.kill()
 
       # super vomit life update
-      print(len(self.super_vomit_list))
       for super_vomit in self.super_vomit_list : 
         super_vomit.update()
         super_vomit.life-=delta_time
