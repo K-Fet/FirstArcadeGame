@@ -36,7 +36,6 @@ class Game(arcade.Window):
 
   def __init__(self,screen_width=SCREEN_WIDTH,screen_height=SCREEN_HEIGHT):
     super().__init__(screen_width, screen_height, fullscreen=FULLSCREEN)
-    
     self.player = None
     
     # To be responsive
@@ -59,6 +58,9 @@ class Game(arcade.Window):
     self.game_over_isHighscore=False
     self.menu = True
     self.highscores = False
+
+    #Sounds 
+    self.sounds_effects_list = None
 
     # Menu creation
     self.main_menu = Menu(MAIN_MENU[0], MAIN_MENU[1], self.screen_width, self.screen_height)
@@ -104,6 +106,11 @@ class Game(arcade.Window):
     self.physic_engines_list = list()
 
     self.physic_engines_list.append(arcade.PhysicsEngineSimple(self.player,self.map.wall_list))
+
+    # Sounds effect setup
+    securitas_upgrade_sound=arcade.load_sound("sounds/effects/securitasupgrade.wav")
+    self.sounds_effects_list=dict()
+    self.sounds_effects_list["securitasupgrade"]=securitas_upgrade_sound
 
     # Physic engines setup
     self.physic_engines_list.append(arcade.PhysicsEngineSimple(securitas_1,self.map.wall_list))
@@ -213,6 +220,7 @@ class Game(arcade.Window):
           newSecuritas = Securitas("img/securitas_angry.png", secu.center_x, secu.center_y, True)
           self.kill_properly(secu, newSecuritas)
           self.securitas_list.append(newSecuritas)
+          arcade.play_sound(self.sounds_effects_list["securitasupgrade"])
         elif secu.BAC < ANGRY_SECURITAS_BAC and secu.isAngry:
           newSecuritas = Securitas("img/securitas.png", secu.center_x, secu.center_y)
           self.kill_properly(secu, newSecuritas)
