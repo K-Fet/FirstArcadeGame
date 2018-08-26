@@ -109,8 +109,14 @@ class Game(arcade.Window):
 
     # Sounds effect setup
     securitas_upgrade_sound=arcade.load_sound("sounds/effects/securitasupgrade.wav")
+    gameover_sound=arcade.load_sound("sounds/effects/gameover.wav")
+    beer_sound=arcade.load_sound("sounds/effects/beer.wav")
+    player_upgrade_sound=arcade.load_sound("sounds/effects/playerupgrade.wav")
     self.sounds_effects_list=dict()
     self.sounds_effects_list["securitasupgrade"]=securitas_upgrade_sound
+    self.sounds_effects_list["gameover"]=gameover_sound
+    self.sounds_effects_list["beer"]=beer_sound
+    self.sounds_effects_list["playerupgrade"]=player_upgrade_sound
 
     # Physic engines setup
     self.physic_engines_list.append(arcade.PhysicsEngineSimple(securitas_1,self.map.wall_list))
@@ -209,9 +215,10 @@ class Game(arcade.Window):
         newPlayer = player("img/player_drunk.png",self.player.center_x,self.player.center_y,True)
         newPlayer.change_x = self.player.change_x
         newPlayer.change_y = self.player.change_y
-        # self.player.kill()
         self.kill_properly(self.player, newPlayer)
         self.player = newPlayer
+        arcade.play_sound(self.sounds_effects_list["playerupgrade"])
+        self.sounds_effects_list["playerupgrade"]=arcade.load_sound("sounds/effects/playerupgrade.wav")
 
         
       # Securitas update img
@@ -221,6 +228,7 @@ class Game(arcade.Window):
           self.kill_properly(secu, newSecuritas)
           self.securitas_list.append(newSecuritas)
           arcade.play_sound(self.sounds_effects_list["securitasupgrade"])
+          self.sounds_effects_list["securitasupgrade"]=arcade.load_sound("sounds/effects/securitasupgrade.wav")
         elif secu.BAC < ANGRY_SECURITAS_BAC and secu.isAngry:
           newSecuritas = Securitas("img/securitas.png", secu.center_x, secu.center_y)
           self.kill_properly(secu, newSecuritas)
@@ -281,6 +289,8 @@ class Game(arcade.Window):
       for beer_sprite_hit in beer_hit_list:
         beer_sprite_hit.kill()
         self.player.BAC+=1
+        arcade.play_sound(self.sounds_effects_list["beer"])
+        self.sounds_effects_list["beer"]=arcade.load_sound("sounds/effects/beer.wav")
  
       # generate current_beer_number 
       if self.total_time//BEER_GENERATION_COEFF<1:
@@ -329,7 +339,9 @@ class Game(arcade.Window):
               self.player.username+="@"
             highscore[self.username]=int(self.score)
             save_score(highscore)
-
+          else :
+            arcade.play_sound(self.sounds_effects_list["gameover"])
+            self.sounds_effects_list["gameover"]=arcade.load_sound("sounds/effects/gameover.wav")
   # Result of all key pressed possibility
   def on_key_press(self, key, modifiers):
     if(self.game_over==False, self.menu==False, self.highscores==False):
