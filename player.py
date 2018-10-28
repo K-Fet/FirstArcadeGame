@@ -8,6 +8,7 @@ class player(arcade.Sprite):
 		self.center_y=center_y
 		self.BAC = 0 if isDrunk == False  else DRUNK_LEVEL_PLAYER
 		self.isDrunk = isDrunk
+		self.isSuperDrunk = False
 		self.can_move= True
 		self.static_time=0
 		self.invincible= False
@@ -25,6 +26,12 @@ class player(arcade.Sprite):
 				self.change_x = 0
 				self.change_y = 0
 				self.static_time -= delta_time
+		
+		# Handle isSuperDrunk
+		if self.BAC >= SUPER_DRUNK_LEVEL_PLAYER:
+			if self.isSuperDrunk == False: self.isSuperDrunk = True
+		else:
+			self.isSuperDrunk = False
 
 		# Decrease the invincible_time attribute by delta time.
 		if self.invincible == True:

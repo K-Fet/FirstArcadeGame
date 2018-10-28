@@ -5,6 +5,7 @@ from player import *
 from beer import *
 from securitas import *
 from vomit import *
+from SuperVomit import *
 from map import *
 from menu import *
 from menus_items import *
@@ -53,6 +54,7 @@ class Game(arcade.Window):
     self.securitas_list = None # list of securistas objects
 
     self.vomit_list=None # list of vomits object
+    self.super_vomit_list=None # list of super vomits object
 
     # Windows 
     self.game_over = False
@@ -81,6 +83,7 @@ class Game(arcade.Window):
     # Sprite lists SETUP
     self.beer_list=arcade.SpriteList()
     self.vomit_list=arcade.SpriteList()
+    self.super_vomit_list = arcade.SpriteList()
 
     beer_sprite=beer(self.screen_width, self.screen_height, self.screen_width//2, self.screen_height//2)
     self.current_beer_number = 1
@@ -163,6 +166,7 @@ class Game(arcade.Window):
       # Sprites display
       self.beer_list.draw()
       self.vomit_list.draw()
+      self.super_vomit_list.draw()
       self.securitas_list.draw()
       self.player.draw()
       self.map.wall_list.draw()
@@ -194,14 +198,24 @@ class Game(arcade.Window):
         if vomit_sprites.life<0:
           vomit_sprites.kill()
 
+      # super vomit life update
+      for super_vomit in self.super_vomit_list : 
+        super_vomit.update()
+        super_vomit.life-=delta_time
+        if super_vomit.life<0:
+          super_vomit.kill()
+
       # Player update
       self.player.update(delta_time)
+      
 
       # Change picture if drunk
       if self.player.BAC >= DRUNK_LEVEL_PLAYER and self.player.isDrunk == False:
         newPlayer = player("img/player_drunk.png",self.player.center_x,self.player.center_y,True)
         newPlayer.change_x = self.player.change_x
         newPlayer.change_y = self.player.change_y
+        newPlayer.invincible = self.player.invincible
+        newPlayer.invincible_time = self.player.invincible_time
         # self.player.kill()
         self.kill_properly(self.player, newPlayer)
         self.player = newPlayer
@@ -249,7 +263,18 @@ class Game(arcade.Window):
           beer_sprites.kill()
           securitas_sprite.BAC+=1
 
-
+      # Handle collision between super vomit and securitas
+      for secu in self.securitas_list:
+        secu_super_vomit_hit_list = arcade.check_for_collision_with_list(secu, self.super_vomit_list)
+        if len(secu_super_vomit_hit_list) > 0 : 
+          secu.static_time = SUPER_TIME_STATIC
+          secu.can_move = False
+          secu.change_x = 0
+          secu.change_y = 0
+          secu.BAC = 0
+          for super_vomit_being_hit in secu_super_vomit_hit_list:
+            self.score += super_vomit_being_hit.power * SUPER_DRUNK_SCORE_MULTIPLICATOR
+            super_vomit_being_hit.kill()
       
       # generate current_beer_number 
       if self.total_time//BEER_GENERATION_COEFF<1:
@@ -299,6 +324,15 @@ class Game(arcade.Window):
           self.player.can_move=False
           self.player.static_time=TIME_STATIC
 
+      # Handle player collision with super vomit
+      super_vomit_hit_list_with_player = arcade.check_for_collision_with_list(self.player, self.super_vomit_list)
+      if len(super_vomit_hit_list_with_player) > 0 and self.player.invincible == False:
+        self.player.can_move = False
+        self.player.static_time = SUPER_TIME_STATIC
+        for super_vomit_being_hit_by_player in super_vomit_hit_list_with_player:
+          super_vomit_being_hit_by_player.kill()
+
+
       # Result of a collision between a player and a securitas
       # # GameOver menu opened
       # # highscore handler       
@@ -344,22 +378,26 @@ class Game(arcade.Window):
       if key == arcade.key.LEFT or key == arcade.key.RIGHT:
         self.player.change_x = 0
       if key == arcade.key.TAB and self.player.BAC>0:
+        self.score+=self.player.BAC
+        if self.player.isSuperDrunk and (self.player.change_x != 0 or self.player.change_y != 0):
+          super_vomit = SuperVomit(self.player.center_x, self.player.center_y, self.player.change_x, self.player.change_y, self.player.BAC)
+          self.super_vomit_list.append(super_vomit)
+        else:
           vomit_sprite=vomit(self.player.center_x,self.player.center_y)
-          self.score+=self.player.BAC
           self.vomit_list.append(vomit_sprite)
-          if self.player.isDrunk:
-            newPlayer = player("img/player.png",self.player.center_x,self.player.center_y)
-            newPlayer.change_x = self.player.change_x
-            newPlayer.change_y = self.player.change_y
-            # self.player.kill()
-            self.kill_properly(self.player, newPlayer)
-            self.player = newPlayer
-          else:
-            self.player.BAC=0
-
-            
-          self.player.invincible = True
-          self.player.invincible_time=TIME_INVINCIBLE
+        if self.player.isDrunk:
+          newPlayer = player("img/player.png",self.player.center_x,self.player.center_y)
+          newPlayer.change_x = self.player.change_x
+          newPlayer.change_y = self.player.change_y 
+          newPlayer.invincible = self.player.invincible
+          newPlayer.invincible_time = self.player.invincible_time
+          # self.player.kill()
+          self.kill_properly(self.player, newPlayer)
+          self.player = newPlayer
+        else:
+          self.player.BAC=0
+        self.player.invincible = True
+        self.player.invincible_time=TIME_INVINCIBLE
           
   # Mouse handler        
   def on_mouse_press(self,x,y,button,modifiers):
